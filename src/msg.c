@@ -54,22 +54,62 @@ void PrintMenu(void)
   "                   for all FASTA reads according to a reference.\n"
   "      %-10s   Computes Relative Absent Words (RAWs) with\n"
   "                   CG quantity estimation for all RAWs.\n"
-  "      %-10s   Computes the local redundancy of a FASTA read,\n"
-  "                   providing bidirectional complexity profiles \n"
-  "                   and further structural similarity analysis.\n" 
-  "      %-10s   FASTA sequence simulation with features: \n"
-  "                   file extraction, random generation, sequence\n"
-  "                   modeling (with SNPs specific mutations).\n"
   "                                                      \n"
   "Help: %s <command> -h for accessing each command menu.\n"
   "                                                      \n",
-  PNAME, VERSION, RELEASE, PNAME, LT_KEYS[3].key, LT_KEYS[1].key, 
-  LT_KEYS[2].key, LT_KEYS[5].key, LT_KEYS[6].key, LT_KEYS[8].key, 
-  LT_KEYS[4].key, LT_KEYS[7].key, PNAME);
+  PNAME, VERSION, RELEASE, PNAME, LT_KEYS[1].key, LT_KEYS[2].key, 
+  LT_KEYS[3].key, LT_KEYS[4].key, LT_KEYS[5].key, LT_KEYS[6].key, 
+  PNAME);
+  return;
+  }
+  
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Moving Average
+
+void PrintMenuMA(void)
+  {
+  fprintf(stderr,
+  "NAME                                                                    \n"
+  "      %s %s                                                    \n"
+  "                                                                        \n"
+  "DESCRIPTION                                                             \n"
+  "      filters a float column file using a moving average.               \n"
+  "                                                                        \n"
+  "PARAMETERS                                                              \n"
+  "      -h,  --help                                                       \n"
+  "           usage guide (help menu),                                     \n"
+  "                                                                        \n"
+  "      -v,  --verbose                                                    \n"
+  "           verbose mode (more information),                             \n"
+  "                                                                        \n"
+  "      -i,  --ignore-first-line                                          \n"
+  "           ignores first line,                                          \n"
+  "                                                                        \n"
+  "      -p,  --position                                                   \n"
+  "           show index position for each entry,                          \n"
+  "                                                                        \n"
+  "      -w [INT],  --window [INT]                                         \n"
+  "           window size (default: 47),                                   \n"
+  "                                                                        \n"
+  "      -c [INT],  --column [INT]                                         \n"
+  "           column to filter (e.g. first column: -c 1),                  \n"
+  "                                                                        \n"
+  "      < [FILE]                                                          \n"
+  "           Input column file target (e.g. data.txt) -- MANDATORY.       \n"
+  "                                                                        \n"
+  "SYNOPSIS                                                                \n"
+  "      %s %s [OPTION]... < [FILE]            \n"
+  "                                                                        \n"
+  "EXAMPLE                                                                 \n"
+  "      %s %s -v -w %u < data.txt             \n"
+  "                                                                        \n",
+  PNAME, LT_KEYS[1].key, PNAME, LT_KEYS[1].key, PNAME, LT_KEYS[1].key,
+  DEF_MA_WINDOW);
   return;
   }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Filter by characteristics
 
 void PrintMenuFC(void)
   {
@@ -126,11 +166,12 @@ void PrintMenuFC(void)
   "EXAMPLE                                                                 \n"
   "      %s %s -a ACGT -min 29200 -p SARS < viruses.fa           \n"
   "                                                                        \n",
-  PNAME, LT_KEYS[1].key, PNAME, LT_KEYS[1].key, PNAME, LT_KEYS[1].key);
+  PNAME, LT_KEYS[2].key, PNAME, LT_KEYS[2].key, PNAME, LT_KEYS[2].key);
   return;
   }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Frequencies
 
 void PrintMenuAF(void)
   {
@@ -163,51 +204,7 @@ void PrintMenuAF(void)
   "EXAMPLE                                                                 \n"
   "      %s %s < viruses.fa                                      \n"
   "                                                                        \n",
-  PNAME, LT_KEYS[2].key, PNAME, LT_KEYS[2].key, PNAME, LT_KEYS[2].key);
-  return;
-  }
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-void PrintMenuMA(void)
-  {
-  fprintf(stderr,
-  "NAME                                                                    \n"
-  "      %s %s                                                    \n"
-  "                                                                        \n"
-  "DESCRIPTION                                                             \n"
-  "      filters a float column file using a moving average.               \n"
-  "                                                                        \n"
-  "PARAMETERS                                                              \n"
-  "      -h,  --help                                                       \n"
-  "           usage guide (help menu),                                     \n"
-  "                                                                        \n"
-  "      -v,  --verbose                                                    \n"
-  "           verbose mode (more information),                             \n"
-  "                                                                        \n"
-  "      -i,  --ignore-first-line                                          \n"
-  "           ignores first line,                                          \n"
-  "                                                                        \n"
-  "      -p,  --position                                                   \n"
-  "           show index position for each entry,                          \n"
-  "                                                                        \n"
-  "      -w [INT],  --window [INT]                                         \n"
-  "           window size (default: 47),                                   \n"
-  "                                                                        \n"
-  "      -c [INT],  --column [INT]                                         \n"
-  "           column to filter (e.g. first column: -c 1),                  \n"
-  "                                                                        \n"
-  "      < [FILE]                                                          \n"
-  "           Input column file target (e.g. data.txt) -- MANDATORY.       \n"
-  "                                                                        \n"
-  "SYNOPSIS                                                                \n"
-  "      %s %s [OPTION]... < [FILE]            \n"
-  "                                                                        \n"
-  "EXAMPLE                                                                 \n"
-  "      %s %s -v -w %u < data.txt             \n"
-  "                                                                        \n",
-  PNAME, LT_KEYS[3].key, PNAME, LT_KEYS[3].key, PNAME, LT_KEYS[3].key,
-  DEF_MA_WINDOW);
+  PNAME, LT_KEYS[3].key, PNAME, LT_KEYS[3].key, PNAME, LT_KEYS[3].key);
   return;
   }
 
@@ -278,63 +275,7 @@ void PrintModels(void){
   }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-void PrintMenuLR(void){
-  fprintf(stderr,
-  "NAME                                                                \n"
-  "      %s %s                                        \n"
-  "                                                                    \n"
-  "DESCRIPTION                                                         \n"
-  "      Local redundancy estimation of a sequence (FASTA).            \n"
-  "                                                                    \n"
-  "PARAMETERS                                                          \n"
-  "                                                                    \n"
-  "      -h,  --help                                                   \n"
-  "           usage guide (help menu),                                 \n"
-  "                                                                    \n"
-  "      -v,  --verbose                                                \n"
-  "           verbose mode (more information),                         \n"
-  "                                                                    \n"
-  "      -d,  --dna                                                    \n"
-  "           considers exclusively DNA alphabet {A,C,G,T},            \n"
-  "           it also provides inverted repeats models,                \n"
-  "           flag absence considers inversions (without complements), \n"
-  "                                                                    \n"
-  "      -t [FLOAT],  --threshold [FLOAT]                              \n"
-  "           threshold to segment regions (real),                     \n"
-  "                                                                    \n"
-  "      -w [FLOAT],  --weight [FLOAT]                                 \n"
-  "           weight to use in low-pass filter (real),                 \n"
-  "                                                                    \n"
-  "      -i [INT],  --ignore [INT]                                     \n"
-  "           ignore lengths of segmented regions below this value,    \n"
-  "                                                                    \n"
-  "      -p,  --show-parameters                                        \n"
-  "           show parameters of the models for optimization,          \n"
-  "                                                                    \n"
-  "      -s,  --show-levels                                            \n"
-  "           show pre-computed compression levels (parameters),       \n"
-  "                                                                    \n"
-  "      -l [INT],  --level [INT]                                      \n"
-  "           compression level (integer),                             \n"
-  "           it defines compressibility in balance with computational \n"
-  "           resources (RAM & time), use -s for levels perception,    \n"
-  "                                                                    \n"
-  "      [FILE]                                                        \n"
-  "           input sequence filename (to analyze) -- MANDATORY,       \n"
-  "           FASTA file for the analysis (last argument).             \n"
-  "                                                                    \n"
-  "SYNOPSIS                                                            \n"
-  "      %s %s [OPTION]... [FILE]                         \n"
-  "                                                                    \n"
-  "EXAMPLE                                                             \n"
-  "      %s %s -v -w 0.03 -m 11:50:0:1:0:0.9/0:0:0 seq.fa \n"
-  "                                                                    \n",
-  PNAME, LT_KEYS[4].key, PNAME, LT_KEYS[4].key, PNAME, LT_KEYS[4].key);
-  return;
-  }
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Normalized Compression
 
 void PrintMenuNC(void){
   fprintf(stderr,
@@ -381,11 +322,12 @@ void PrintMenuNC(void){
   "EXAMPLE                                                             \n"
   "      %s %s -v -t 8 -m 11:50:0:1:0:0.9/0:0:0 seqs.fa     \n"
   "                                                                    \n",
-  PNAME, LT_KEYS[5].key, PNAME, LT_KEYS[5].key, PNAME, LT_KEYS[5].key);
+  PNAME, LT_KEYS[4].key, PNAME, LT_KEYS[4].key, PNAME, LT_KEYS[4].key);
   return;
   }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Normalized Compression Distance
 
 void PrintMenuNCD(void){
   fprintf(stderr,
@@ -436,84 +378,12 @@ void PrintMenuNCD(void){
   "EXAMPLE                                                             \n"
   "      %s %s -v -m 11:50:0:1:0:0.9/0:0:0 -r ref.fa seqs.fa \n"
   "                                                                    \n",
-  PNAME, LT_KEYS[6].key, PNAME, LT_KEYS[6].key, PNAME, LT_KEYS[6].key);
+  PNAME, LT_KEYS[5].key, PNAME, LT_KEYS[5].key, PNAME, LT_KEYS[5].key);
   return;
   }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-void PrintMenuSi(void){
-  fprintf(stderr,
-  "NAME                                                                \n"
-  "      %s %s                                              \n"
-  "                                                                    \n"
-  "DESCRIPTION                                                         \n"
-  "      Simulation of FASTA sequences with specific features.         \n"
-  "                                                                    \n"
-  "PARAMETERS                                                          \n"
-  "                                                                    \n"
-  "      -h,  --help                                                   \n"
-  "           usage guide (help menu),                                 \n"
-  "                                                                    \n"
-  "      -v,  --verbose                                                \n"
-  "           verbose mode (more information),                         \n"
-  "                                                                    \n"
-  "      -n,  --no-dna                                                 \n"
-  "           Does not consider a DNA alphabet {A,C,G,T},              \n"
-  "           it provides possible inversions without complements,     \n"
-  "                                                                    \n"
-  "      -a [STRING],  --alphabet [STRING]                             \n"
-  "           alphabet to consider (Default: ACGT),                    \n"
-  "                                                                    \n"
-  "      -fs [FEATURES],  --file-segment [FEATURES]                    \n"
-  "           FASTA file segment features:                             \n"
-  "           |    [init:end:ir:seed:subs:adds:dels:file]              \n"
-  "           |    ...                                                 \n"
-  "           init [INT]   - initial position of the segment,          \n"
-  "           end  [INT]   - ending position of the segment,           \n"
-  "           ir   [INT]   - segment inverted if 1, otherwise 0,       \n"
-  "           seed [INT]   - initial number for random generation,     \n"
-  "           subs [FLOAT] - probability of substitution mutation,     \n"
-  "           adds [FLOAT] - probability of addition mutation,         \n"
-  "           dels [FLOAT] - probability of deletion mutation,         \n"
-  "           file [FILE]  - FASTA filename for extracting segment,    \n"
-  "                                                                    \n"
-  "      -rs [FEATURES],  --rand-segment [FEATURES]                    \n"
-  "           Random segment features:                                 \n"
-  "           |    [size:ir:seed:subs:adds:dels]                       \n"
-  "           |    ...                                                 \n"
-  "           size [INT]   - length of the segment,                    \n"
-  "           ir   [INT]   - segment inverted if 1, otherwise 0,       \n"
-  "           seed [INT]   - initial number for random generation,     \n"
-  "           subs [FLOAT] - probability of substitution mutation,     \n"
-  "           adds [FLOAT] - probability of addition mutation,         \n"
-  "           dels [FLOAT] - probability of deletion mutation,         \n"
-  "                                                                    \n"
-  "      -ms [FEATURES],  --model-segment [FEATURES]                   \n"
-  "           Model segment features:                                  \n"
-  "           |    [size:ctx:bet:ir:seed:subs:adds:dels:file]          \n"
-  "           |    ...                                                 \n"
-  "           size [INT]   - length of the segment,                    \n"
-  "           ctx  [INT]   - context to model and simulate,            \n"
-  "           bet  [INT]   - intensity for higher bet strength,        \n"
-  "           ir   [INT]   - segment inverted if 1, otherwise 0,       \n"
-  "           seed [INT]   - initial number for random generation,     \n"
-  "           subs [FLOAT] - probability of substitution mutation,     \n"
-  "           adds [FLOAT] - probability of addition mutation,         \n"
-  "           dels [FLOAT] - probability of deletion mutation,         \n"
-  "           file [FILE]  - FASTA filename for learning model,        \n"
-  "                                                                    \n"
-  "SYNOPSIS                                                            \n"
-  "      %s %s [OPTION]... > output.fa      \n"
-  "                                                                    \n"
-  "EXAMPLE                                                             \n"
-  "      %s %s -rs 50:0:1:0.1:0:0 -ms 80:7:50:0:7:0:0:0:x.fa\n"
-  "                                                                    \n",
-  PNAME, LT_KEYS[7].key, PNAME, LT_KEYS[7].key, PNAME, LT_KEYS[7].key);
-  return;
-  }
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// RAWs
 
 void PrintMenuRW(void){
   fprintf(stderr,
@@ -572,7 +442,7 @@ void PrintMenuRW(void){
   "EXAMPLE                                                             \n"
   "      %s %s -v -min 11 -max 16 human.fa SARS-CoV2.fa\n"
   "                                                                    \n",
-  PNAME, LT_KEYS[8].key, PNAME, LT_KEYS[8].key, PNAME, LT_KEYS[8].key);
+  PNAME, LT_KEYS[6].key, PNAME, LT_KEYS[6].key, PNAME, LT_KEYS[6].key);
   return;
   }
 

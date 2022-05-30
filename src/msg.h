@@ -13,10 +13,8 @@ void PrintMenuFC     (void);
 void PrintMenuAF     (void);
 void PrintMenuMA     (void);
 void PrintModels     (void);
-void PrintMenuLR     (void);
 void PrintMenuNC     (void);
 void PrintMenuNCD    (void);
-void PrintMenuSi     (void);
 void PrintMenuRW     (void);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -10,15 +10,6 @@
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-#define LR_MAX_MEM                9999999
-#define LR_MIN_MEM                0
-#define LR_MAX_LEVEL              24
-#define LR_MIN_LEVEL              1
-#define LR_MAX_CTX                31
-#define LR_MIN_CTX                1
-#define LR_MAX_DEN                1000000
-#define LR_MIN_DEN                1
-
 #define NC_MAX_MEM                9999999
 #define NC_MIN_MEM                0
 #define NC_MAX_LEVEL              24
@@ -36,20 +27,6 @@
 #define NCD_MIN_CTX               1
 #define NCD_MAX_DEN               1000000
 #define NCD_MIN_DEN               1
-
-#define SI_MAX_SIZE               UINT_MAX
-#define SI_MIN_SIZE               1
-#define SI_MAX_SEED               UINT_MAX
-#define SI_MIN_SEED               1
-#define SI_MAX_CTX                20
-#define SI_MIN_CTX                1
-#define SI_MAX_BET                50000
-#define SI_MIN_BET                1
-#define SI_MAX_INIT               UINT_MAX
-#define SI_MIN_INIT               1
-#define SI_MAX_END                UINT_MAX
-#define SI_MIN_END                1
-#define SI_OUT_FA_LS              80
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -113,19 +90,6 @@ RW_PARAMETERS;
 
 typedef struct
   {
-  U32       help;
-  U32       verbose;
-  char      *alphabet;
-  U8        dna;
-  U32       nSym;
-  MODEL_PAR *model;
-  U32       nModels;
-  U64       iBase;
-  }
-SI_PARAMETERS;
-
-typedef struct
-  {
   ALPHABET  *A;
   char      *alphabet;
   U32       nSym;
@@ -167,33 +131,6 @@ typedef struct
   SFILES    *ref;
   }
 NC_PARAMETERS;
-
-typedef struct
-  {
-  ALPHABET  *A;
-  char      *alphabet;
-  U32       nSym;
-  U8        help;
-  U8        verbose;
-  U8        force;
-  U8        level;
-  U8        dna;
-  double    threshold;
-  double    weight;
-  U32       region;
-  MODEL_PAR *model;
-  U64       size;
-  U64       ignore;
-  U32       nModels;
-  U32       hs;
-  U32       memory;
-  double    lr;
-  char      *reference;
-  char      *output;
-  char      *filename;
-  SFILES    *ref;
-  }
-LR_PARAMETERS;
 
 typedef struct
   {
@@ -240,17 +177,13 @@ double      ArgsDouble         (double, char *[], uint32_t, char *, char *);
 uint8_t     ArgsState          (uint8_t  , char *[], uint32_t, char *, char *);
 char        *ArgsString        (char    *, char *[], uint32_t, char *, char *);
 char        *ArgsFiles         (char *[], uint32_t, char *);
-MODEL_PAR   ArgsUniqModelLR    (char *, uint8_t);
 MODEL_PAR   ArgsUniqModelNC    (char *, uint8_t);
 MODEL_PAR   ArgsUniqModelNCD   (char *, uint8_t);
-MODEL_PAR   ArgsUniqModelSI    (char *, uint8_t);
 void        PrintParametersMA  (MA_PARAMETERS *);
 void        PrintParametersAF  (AF_PARAMETERS *);
 void        PrintParametersFC  (FC_PARAMETERS *);
-void        PrintParametersLR  (LR_PARAMETERS *);
 void        PrintParametersNC  (NC_PARAMETERS *);
 void        PrintParametersNCD (NCD_PARAMETERS *);
-void        PrintParametersSI  (SI_PARAMETERS *);
 void        PrintParametersRW  (RW_PARAMETERS *);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

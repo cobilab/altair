@@ -15,7 +15,6 @@
 #define K6  6
 #define K7  7
 #define K8  8
-#define K9  9
 
 typedef struct
   {
@@ -27,14 +26,12 @@ K_STRUCT;
 static K_STRUCT LT_KEYS[] = 
   { 
     { "help"        , K1  },  // HELP MENU
-    { "filter"      , K2  },  // FILTER CHARACTERISTICS
-    { "frequency"   , K3  },  // ALPHABET FREQUENCIES
-    { "average"     , K4  },  // MOVING AVERAGE
-    { "redundancy"  , K5  },  // REDUNDANCY PROFILES
-    { "nc"          , K6  },  // NORMALIZED COMPRESSION
-    { "ncd"         , K7  },  // NORMALIZED COMPRESSION DISTANCE
-    { "simulate"    , K8  },  // SIMULATION OF FASTA CONTENT
-    { "raw"         , K9  }   // RELATIVE ABSENT WORDS
+    { "average"     , K2  },  // MOVING AVERAGE
+    { "filter"      , K3  },  // FILTER CHARACTERISTICS
+    { "frequency"   , K4  },  // ALPHABET FREQUENCIES
+    { "nc"          , K5  },  // NORMALIZED COMPRESSION
+    { "ncd"         , K6  },  // NORMALIZED COMPRESSION DISTANCE
+    { "raw"         , K7  }   // RELATIVE ABSENT WORDS
   };
 
 #define NKEYS (sizeof(LT_KEYS)/sizeof(K_STRUCT))
