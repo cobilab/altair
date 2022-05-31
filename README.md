@@ -8,7 +8,7 @@
 
 </div>
 
-<p align="center"><img src="imgs/logo.png" alt="AltaiR" width="250" border="0" /></p>
+<p align="center"><img src="imgs/altair.png" alt="AltaiR" width="250" border="0" /></p>
 <p align="center">
 <b>AltaiR: a C toolkit for alignment-free and spatial-temporal analysis of multi-FASTA data</b>. 
 </p>
