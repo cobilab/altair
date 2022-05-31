@@ -35,7 +35,8 @@ void PrintMenu(void)
   {
   fprintf(stderr,
   "                                                        \n"
-  "Program: %s [Efficient Toolkit For Parasite-Host Analysis]\n" 
+  "Program: %s [ Alignment-free and spatial-temporal analysis \n"
+  "                  toolkit for large-scale multi-FASTA data ]\n" 
   "Version: %u.%u                                          \n"
   "                                                        \n"
   "Usage: %s <command> [options] < <file>                  \n"
