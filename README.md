@@ -16,7 +16,7 @@
 <p align="justify">
 This method provides alignment-free and spatial-temporal analysis of multi-FASTA data through the implementation of a C toolkit highly flexible and with characteristics covering large-scale data, namely extensive collections of genomes/proteomes. This toolkit is ideal for scenarios entangling the presence of multiple sequences from epidemic and pandemic events. AlcoR is implemented in C language using multi-threading to increase the computational speed, is flexible for multiple applications, and does not contain external dependencies. The tool accepts any sequence(s) in (multi-) FASTA format.
 
-The AltaiR tool contains one main menu (command: <b>AltaiR</b>) with the six sub menus for computing the features that it provides, namely
+The AltaiR toolkit contains one main menu (command: <b>AltaiR</b>) with the six sub menus for computing the features that it provides, namely
 <ul>
 <li><b>average</b>: moving average filter of a column float CSV file (the column to use is a parameter);</li>
 <li><b>filter</b>: filters FASTA reads by characteristics: alphabet, completeness, length, CG quantity, multiple string patterns and pattern absence; </li>
