@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-MIN=29200;
+MIN=29500;
 MAX=30000;
 #
 lzma -d -k -c SARS-CoV-2.fa.lzma \
@@ -29,6 +29,8 @@ gnuplot << EOF
     set grid
     set ylabel "Frequency"
     set xlabel "Sequence length"
+    set style line 4 lc rgb '#CC0000' lt 2 dashtype '---' lw 4 pt 5 ps 0.4 # --- red
+    set arrow from 29903, graph 0 to 29903, graph 1 nohead ls 4
     plot "histogram-data.txt" u 2:1 w boxes lc rgb"blue" notitle
 EOF
 #
