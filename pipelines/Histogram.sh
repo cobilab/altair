@@ -13,7 +13,7 @@ lzma -d -k -c SARS-CoV-2.fa.lzma \
 #
 gnuplot << EOF
     reset
-    set terminal pdfcairo enhanced color font 'Verdade,9'
+    set terminal pdfcairo enhanced color font 'Verdade,12'
     set output "Histogram.pdf"
     set style line 101 lc rgb '#000000' lt 1 lw 2
     set border 3 front ls 101
