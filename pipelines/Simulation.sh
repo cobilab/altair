@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 ITERATIONS=5000;
-RATE=0.005;
+RATE=0.0001;
 #
 rm -f ALL.fa;
 #
