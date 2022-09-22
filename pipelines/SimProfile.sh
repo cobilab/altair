@@ -29,7 +29,7 @@ gnuplot << EOF
     set ytics auto
     set grid
     set ylabel "NCD"
-    set xlabel "Time Point"
+    set xlabel "Time"
     set border linewidth 1.5
     set style line 1 lc rgb '#322152' lt 1 lw 1 pt 5 ps 0.4 # --- blue
     set style line 3 lc rgb '#009900' lt 1 lw 1.5 pt 6 ps 0.4 # --- green
