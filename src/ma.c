@@ -48,7 +48,7 @@ void MovingAverage(MA_PARAMETERS *MAP)
 	if(row >= MAP->window_size)
           newAvg = MovAvgInstant(filt, &sum, idx, MAP->window_size, atof(value));
 	else
-          newAvg = MovAvgInstant(filt, &sum, idx, row, atof(value));
+          newAvg = MovAvgInstant(filt, &sum, idx, row+1, atof(value));
 
 	if(MAP->show_pos == 1)	
 	  fprintf(stdout, "%"PRIu64"\t%lf\n", row+1, newAvg);
