@@ -43,16 +43,19 @@ void MovingAverage(MA_PARAMETERS *MAP)
       {
       if(++col == MAP->column) 
         {
-        if(MAP->ignore == 1 && row == 0) break;
-        newAvg = MovAvgInstant(filt, &sum, idx, MAP->window_size, atof(value));
+        if(MAP->ignore == 1 && row == 0) 
+	  break;
 	if(row >= MAP->window_size)
-	  {
-	  if(MAP->show_pos == 1)	
-	    fprintf(stdout, "%"PRIu64"\t%lf\n", row-MAP->window_size+1, newAvg);
-	  else
-	    fprintf(stdout, "%lf\n", newAvg);
-	  }
-        if(++idx == MAP->window_size) idx = 0;
+          newAvg = MovAvgInstant(filt, &sum, idx, MAP->window_size, atof(value));
+	else
+          newAvg = MovAvgInstant(filt, &sum, idx, row, atof(value));
+
+	if(MAP->show_pos == 1)	
+	  fprintf(stdout, "%"PRIu64"\t%lf\n", row+1, newAvg);
+	else
+	  fprintf(stdout, "%lf\n", newAvg);
+        
+	if(++idx == MAP->window_size) idx = 0;
         }
       value = strtok(NULL, "\t");
       }

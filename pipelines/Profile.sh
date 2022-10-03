@@ -1,7 +1,5 @@
 #!/bin/bash
 #
-FIL_DROP=0;
-#
 W1=1;
 W2=1000;
 W3=100;
@@ -10,15 +8,15 @@ headsize=10000;
 #
 cat $1 \
 | awk '{ print $1"\t"$2;}' \
-| gto_filter -w $W1 -t $2 -d $FIL_DROP > .NCDFiltered.txt
+| ./AltaiR average -v -c 2 -p -w $W1 > .NCDFiltered.txt
 #
 cat $1 \
 | awk '{ print $1"\t"$2;}' \
-| gto_filter -w $W2 -t $2 -d $FIL_DROP > .NCDFiltered2.txt
+| ./AltaiR average -v -c 2 -p -w $W2 > .NCDFiltered2.txt
 #
 cat $1 \
 | awk '{ print $1"\t"$2;}' \
-| gto_filter -w $W3 -t $2 -d $FIL_DROP > .NCDFiltered3.txt
+| ./AltaiR average -v -c 2 -p -w $W3 > .NCDFiltered3.txt
 #
 AVG=`head -n $headsize .NCDFiltered.txt \
 | LC_NUMERIC="C" awk '{sum += $2} END {print sum / NR}'`;
