@@ -2,7 +2,7 @@
 #
 W1=1;
 W2=10;
-W3=100;
+W3=50;
 #
 cat $1 \
 | awk '{ print $1"\t"$2;}' \
@@ -26,10 +26,10 @@ gnuplot << EOF
     set format '%g'
     set size ratio 0.14
     set key out horiz center top
-    set yrange [$2:$3]
+    set yrange [$3:$4]
     set xrange [:]
     set xtics auto
-    set ytics 0.002
+    set ytics $2
     set grid
     set ylabel "NCD"
     set xlabel "Time"
