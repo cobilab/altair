@@ -23,7 +23,7 @@ gnuplot << EOF
     set style line 101 lc rgb '#000000' lt 1 lw 4
     set border 3 front ls 101
     set tics nomirror out scale 0.5
-    set format '%g'
+    set format x '%.0s%c'
     set size ratio 0.14
     set key out horiz center top
     set yrange [$3:$4]
