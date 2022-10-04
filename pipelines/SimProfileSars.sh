@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-W1=1;
+W1=2;
 W2=10;
 W3=50;
 #
@@ -23,7 +23,7 @@ gnuplot << EOF
     set style line 101 lc rgb '#000000' lt 1 lw 4
     set border 3 front ls 101
     set tics nomirror out scale 0.5
-    set format '%g'
+    set format x '%.0s%c'
     set size ratio 0.14
     set key out horiz center top
     set yrange [$3:$4]
@@ -32,7 +32,7 @@ gnuplot << EOF
     set ytics $2
     set grid
     set ylabel "NCD"
-    set xlabel "Time"
+    set xlabel "Time point"
     set border linewidth 1.5
     set style line 1 lc rgb '#322152' lt 1 lw 1 pt 5 ps 0.4 # --- blue
     set style line 2 lc rgb '#009900' lt 1 lw 1.5 pt 6 ps 0.4 # --- green

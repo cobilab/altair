@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-W1=1;
-W2=100;
+W1=2;
+W2=50;
 #
 cat $1 \
 | awk '{ print $1"\t"$2;}' \
@@ -18,7 +18,7 @@ gnuplot << EOF
     set style line 101 lc rgb '#000000' lt 1 lw 4
     set border 3 front ls 101
     set tics nomirror out scale 0.5
-    set format '%g'
+    set format x '%.0s%c'
     set size ratio 0.2
     set key out horiz center top
     set yrange [$3:$4]
@@ -27,14 +27,12 @@ gnuplot << EOF
     set ytics auto
     set grid
     set ylabel "NCD"
-    set xlabel "Time"
+    set xlabel "Time point"
     set border linewidth 1.5
     set style line 1 lc rgb '#322152' lt 1 lw 1 pt 5 ps 0.4 # --- blue
     set style line 3 lc rgb '#009900' lt 1 lw 1.5 pt 6 ps 0.4 # --- green
     set style line 2 lc rgb '#CC0000' lt 1 lw 1.5 pt 7 ps 0.4 # --- red
-    set xtics border in scale 0,0 nomirror rotate by -55  autojustify
     set xtics  norangelimit  font ",8"
-    nth(countCol,labelCol,n) = ((int(column(countCol)) % n == 2500) ? stringcolumn(labelCol) : "")
     plot ".NCDFiltered2.txt" using 1:2 title '  w=$W2' with lines ls 2, ".NCDFiltered.txt" using 1:2 title '  w=$W1' with lines ls 1
 EOF
 #
