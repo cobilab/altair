@@ -99,6 +99,7 @@ typedef int8_t   I8;
 #define DEF_NC_LEVEL           11
 #define DEF_NC_MIN_THREADS     1
 #define DEF_NC_MAX_THREADS     999999
+#define HEADERS_PREFIX_SIZE    50
 
 #define DEF_NCD_HELP           0
 #define DEF_NCD_FORCE          0

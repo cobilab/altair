@@ -495,7 +495,10 @@ void NormalizedCompression(NC_PARAMETERS *MAP)
 
   if(P->verbose) fprintf(stderr, "[>] Compressing %s ...\n", !P->dna ? 
 		 "DNA" : "Aminoacids");
-  
+ 
+  char identifier_prefix[FA->nReads+1][HEADERS_PREFIX_SIZE+1];
+  uint32_t idx_header = 0;
+
   while((k = fread(buffer, 1, BUFFER_SIZE, F)))
     for(idx = 0 ; idx < k ; ++idx)
       {
@@ -512,9 +515,20 @@ void NormalizedCompression(NC_PARAMETERS *MAP)
         continue;
         }
       if(sym == '\n' && header == 1)
-        { header = 0; nSymbols = 0; continue; }
+        { 
+	header = 0; 
+	nSymbols = 0; 
+	identifier_prefix[idx_reads-1][idx_header] = '\0';
+	idx_header = 0;
+       	continue; 
+	}
       if(sym == '\n') continue;
-      if(header == 1) continue;
+      if(header == 1)
+        {
+	if(idx_header < HEADERS_PREFIX_SIZE)
+	  identifier_prefix[idx_reads-1][idx_header++] = sym;
+	continue;
+        }
       SEQ[nSymbols++] = sym;
       }
  
@@ -522,7 +536,8 @@ void NormalizedCompression(NC_PARAMETERS *MAP)
   else        vr[idx_reads-1] = CompressTargetReadAA (SEQ, nSymbols);
  
   for(idx_reads = 0 ; idx_reads < FA->nReads ; ++idx_reads)
-    fprintf(stdout, "%"PRIu64"\t%lf\n", idx_reads+1, vr[idx_reads]);
+    fprintf(stdout, "%"PRIu64"\t%lf\t%s\n", idx_reads+1, vr[idx_reads], 
+    identifier_prefix[idx_reads]);
 
   fclose(F);
   

@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-ITERATIONS=20000;
-RATE=0.00005;
+ITERATIONS=10000;
+RATE=0.0001;
 #
 rm -f ALL.fa;
 #
 printf "\n" > DIV;
 #
-gto_genomic_gen_random_dna -n 2000 -s 7 \
+gto_genomic_gen_random_dna -n 5000 -s 7 \
 | gto_fasta_from_seq -n "Synthetic DNA" > ORIGINAL.fa
 #
 cp ORIGINAL.fa IN.fa
