@@ -23,8 +23,8 @@
 #include "strings.h"
 #include "cm.h"
 
-NC_PARAMETERS *P;  // FOR THREAD SHARING
-FASTA_READS   *FA; // SHARE PARAMETERS FOR THREADS
+static NC_PARAMETERS *P;  // FOR THREAD SHARING
+static FASTA_READS   *FA; // SHARE PARAMETERS FOR THREADS
 
 //////////////////////////////////////////////////////////////////////////////
 // - - - - - - - - - - C O M P R E S S O R   D N A - - - - - - - - - - - - - -

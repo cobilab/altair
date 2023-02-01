@@ -21,9 +21,9 @@
 #include "stats.h"
 #include "strings.h"
 
-RW_PARAMETERS *P;  // SHARE PARAMETERS FOR THREADS
-ALPHABET      *AL; // SHARE PARAMETERS FOR THREADS
-FASTA_READS   *FA; // SHARE PARAMETERS FOR THREADS
+static RW_PARAMETERS *P;  // SHARE PARAMETERS FOR THREADS
+static ALPHABET      *AL; // SHARE PARAMETERS FOR THREADS
+static FASTA_READS   *FA; // SHARE PARAMETERS FOR THREADS
 
 //////////////////////////////////////////////////////////////////////////////
 // - - - - - - - - - - G E N E R A T E   G N U P L O T   S H - - - - - - - - -
