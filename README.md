@@ -32,7 +32,7 @@ The AltaiR toolkit contains one main menu (command: <b>AltaiR</b>) with the six 
 ### Conda
 Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html), then run the following:
 ```bash
-conda install -y -c bioconda altair
+conda install -y -c bioconda altr
 ```
 
 Otherwise, CMake is needed for installation (http://www.cmake.org/). You can download it directly from http://www.cmake.org/cmake/resources/software.html or use an appropriate packet manager. In the following instructions we show the procedure to install, compile and run AltaiR:
