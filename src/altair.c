@@ -24,9 +24,9 @@
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-NC_PARAMETERS  *NCP;
-NCD_PARAMETERS *NCDP;
-RW_PARAMETERS  *RWP;
+static NC_PARAMETERS  *NCP;
+static NCD_PARAMETERS *NCDP;
+static RW_PARAMETERS  *RWP;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

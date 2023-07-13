@@ -23,8 +23,8 @@
 #include "strings.h"
 #include "cm.h"
 
-static NCD_PARAMETERS *P;         // FOR THREAD SHARING
-static FASTA_READS    *FA;        // SHARE PARAMETERS FOR THREADS
+NCD_PARAMETERS *NP;        // FOR THREAD SHARING
+FASTA_READS    *NFA;       // SHARE PARAMETERS FOR THREADS
 CMODEL         **cModels;  // SHARED FOR THREADING
 
 // - - - - - - - - - - C O M P R E S S O R   D N A - - - - - - - - - - - - - -
@@ -42,19 +42,19 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
   double      bits = 0, bps = 0;
 
   // FORCE DNA
-  P->nSym = 4;
+  NP->nSym = 4;
 
   // EXTRA MODELS DERIVED FROM EDITS
-  totModels = P->nModels;
-  for(n = 0 ; n < P->nModels ; ++n)
-    if(P->model[n].edits != 0)
+  totModels = NP->nModels;
+  for(n = 0 ; n < NP->nModels ; ++n)
+    if(NP->model[n].edits != 0)
       totModels += 1;
 
   PM            = (PMODEL  **) Calloc(totModels, sizeof(PMODEL *));
   for(n = 0 ; n < totModels ; ++n)
-        PM[n]   = CreatePModel      (P->nSym);
-  MX            = CreatePModel      (P->nSym);
-  PT            = CreateFloatPModel (P->nSym);
+        PM[n]   = CreatePModel      (NP->nSym);
+  MX            = CreatePModel      (NP->nSym);
+  PT            = CreateFloatPModel (NP->nSym);
   WM            = CreateWeightModel (totModels);
 
   char *readBUF;
@@ -63,10 +63,10 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
 
   // GIVE SPECIFIC GAMMA:
   int pIdx = 0;
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     {
     WM->gamma[pIdx++] = cModels[n]->gamma;
-    if(P->model[n].edits != 0)
+    if(NP->model[n].edits != 0)
       WM->gamma[pIdx++] = cModels[n]->eGamma;
     }
 
@@ -91,11 +91,11 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
         }
 
       symbBUF->buf[symbBUF->idx] = sym = DNASymToNum(sym);
-      memset((void *)PT->freqs, 0, P->nSym * sizeof(double));
+      memset((void *)PT->freqs, 0, NP->nSym * sizeof(double));
 
       n = 0;
       pos = &symbBUF->buf[symbBUF->idx-1];
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         GetPModelIdx(pos, CM);
@@ -118,7 +118,7 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
       CalcDecayment(WM, PM, sym);
 
       // ADD COUNTERS
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         switch(CM->ir)
@@ -142,7 +142,7 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
         }
 
       // UPDATE INDEXES & SYM CACHE
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         if(CM->memory != 0)
@@ -171,7 +171,7 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
           }
         }
 
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         if(CM->memory != 0)
@@ -199,7 +199,7 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
           }
         }
 
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         if(CM->memory != 0)
@@ -211,7 +211,7 @@ uint64_t CompressTargetReadAndLoadModels(FILE *F)
 
       RenormalizeWeights(WM);
 
-      for(cModel = 0, n = 0 ; cModel < P->nModels ; ++cModel, ++n)
+      for(cModel = 0, n = 0 ; cModel < NP->nModels ; ++cModel, ++n)
         if(cModels[cModel]->edits != 0)
           UpdateTolerantModel(cModels[cModel]->TM, PM[++n], sym);
 
@@ -246,16 +246,16 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
   double      bits = 0, bps = 0;
 
   // EXTRA MODELS DERIVED FROM EDITS
-  totModels = P->nModels;
-  for(n = 0 ; n < P->nModels ; ++n)
-    if(P->model[n].edits != 0)
+  totModels = NP->nModels;
+  for(n = 0 ; n < NP->nModels ; ++n)
+    if(NP->model[n].edits != 0)
       totModels += 1;
 
   PM            = (PMODEL  **) Calloc(totModels, sizeof(PMODEL *));
   for(n = 0 ; n < totModels ; ++n)
-        PM[n]   = CreatePModel      (P->nSym);
-  MX            = CreatePModel      (P->nSym);
-  PT            = CreateFloatPModel (P->nSym);
+        PM[n]   = CreatePModel      (NP->nSym);
+  MX            = CreatePModel      (NP->nSym);
+  PT            = CreateFloatPModel (NP->nSym);
   WM            = CreateWeightModel (totModels);
 
   char *readBUF;
@@ -264,10 +264,10 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
 
   // GIVE SPECIFIC GAMMA:
   int pIdx = 0;
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     {
     WM->gamma[pIdx++] = cModels[n]->gamma;
-    if(P->model[n].edits != 0)
+    if(NP->model[n].edits != 0)
       WM->gamma[pIdx++] = cModels[n]->eGamma;
     }
 
@@ -283,12 +283,12 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
       if(sym == '\n') continue;
       if(header == 1) continue;
 
-      symbBUF->buf[symbBUF->idx] = sym = P->A->revMap[sym];
-      memset((void *)PT->freqs, 0, P->nSym * sizeof(double));
+      symbBUF->buf[symbBUF->idx] = sym = NP->A->revMap[sym];
+      memset((void *)PT->freqs, 0, NP->nSym * sizeof(double));
 
       n = 0;
       pos = &symbBUF->buf[symbBUF->idx-1];
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         GetPModelIdx(pos, CM);
@@ -311,7 +311,7 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
       CalcDecayment(WM, PM, sym);
 
       // ADD COUNTERS
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         switch(CM->ir)
@@ -335,7 +335,7 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
         }
 
       // UPDATE INDEXES & SYM CACHE
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         if(CM->memory != 0)
@@ -364,7 +364,7 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
           }
         }
 
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         if(CM->memory != 0)
@@ -392,7 +392,7 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
           }
         }
 
-      for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+      for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
         {
         CMODEL *CM = cModels[cModel];
         if(CM->memory != 0)
@@ -404,7 +404,7 @@ uint64_t CompressTargetReadAndLoadModelsAA(FILE *F)
 
       RenormalizeWeights(WM);
 
-      for(cModel = 0, n = 0 ; cModel < P->nModels ; ++cModel, ++n)
+      for(cModel = 0, n = 0 ; cModel < NP->nModels ; ++cModel, ++n)
         if(cModels[cModel]->edits != 0)
           UpdateTolerantModel(cModels[cModel]->TM, PM[++n], sym);
 
@@ -443,36 +443,36 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
   double      bits = 0, bps = 0;
  
   // FORCE DNA
-  P->nSym = 4;
+  NP->nSym = 4;
   
   // EXTRA MODELS DERIVED FROM EDITS
-  totModels = P->nModels;
-  for(n = 0 ; n < P->nModels ; ++n)
-    if(P->model[n].edits != 0)
+  totModels = NP->nModels;
+  for(n = 0 ; n < NP->nModels ; ++n)
+    if(NP->model[n].edits != 0)
       totModels += 1;
 
   PM            = (PMODEL  **) Calloc(totModels, sizeof(PMODEL *));
   for(n = 0 ; n < totModels ; ++n)
-        PM[n]   = CreatePModel      (P->nSym);
-  MX            = CreatePModel      (P->nSym);
-  PT            = CreateFloatPModel (P->nSym);
+        PM[n]   = CreatePModel      (NP->nSym);
+  MX            = CreatePModel      (NP->nSym);
+  PT            = CreateFloatPModel (NP->nSym);
   WM            = CreateWeightModel (totModels);
 
   symbBUF  = CreateCBuffer(DEF_BUF_SIZE, DEF_BUF_GUARD);
 
-  cModels = (CMODEL **) Malloc(P->nModels * sizeof(CMODEL *));
-  for(n = 0 ; n < P->nModels ; ++n)
-    cModels[n] = CreateCModel(P->model[n].ctx, P->model[n].den,
-    TARGET, P->model[n].edits, P->model[n].eDen, P->nSym, 
-    P->model[n].gamma, P->model[n].eGamma, P->model[n].ir, 
-    P->model[n].eIr, P->model[n].memory);
+  cModels = (CMODEL **) Malloc(NP->nModels * sizeof(CMODEL *));
+  for(n = 0 ; n < NP->nModels ; ++n)
+    cModels[n] = CreateCModel(NP->model[n].ctx, NP->model[n].den,
+    TARGET, NP->model[n].edits, NP->model[n].eDen, NP->nSym, 
+    NP->model[n].gamma, NP->model[n].eGamma, NP->model[n].ir, 
+    NP->model[n].eIr, NP->model[n].memory);
 
   // GIVE SPECIFIC GAMMA:
   int pIdx = 0;
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     {
     WM->gamma[pIdx++] = cModels[n]->gamma;
-    if(P->model[n].edits != 0)
+    if(NP->model[n].edits != 0)
       WM->gamma[pIdx++] = cModels[n]->eGamma;
     }
 
@@ -490,11 +490,11 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
       }
 
     symbBUF->buf[symbBUF->idx] = sym = DNASymToNum(sym);
-    memset((void *)PT->freqs, 0, P->nSym * sizeof(double));
+    memset((void *)PT->freqs, 0, NP->nSym * sizeof(double));
 
     n = 0;
     pos = &symbBUF->buf[symbBUF->idx-1];
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       GetPModelIdx(pos, CM);
@@ -518,7 +518,7 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
     CalcDecayment(WM, PM, sym);
 
     // ADD COUNTERS
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       switch(CM->ir)
@@ -542,7 +542,7 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
       }
 
     // UPDATE INDEXES & SYM CACHE
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -571,7 +571,7 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -599,7 +599,7 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -611,7 +611,7 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
 
     RenormalizeWeights(WM);
 
-    for(cModel = 0, n = 0 ; cModel < P->nModels ; ++cModel, ++n)
+    for(cModel = 0, n = 0 ; cModel < NP->nModels ; ++cModel, ++n)
       if(cModels[cModel]->edits != 0)
         UpdateTolerantModel(cModels[cModel]->TM, PM[++n], sym);
 
@@ -620,7 +620,7 @@ uint64_t CompressTargetRead_NCD(char *SEQ, uint64_t length)
     }
 
   Free(MX);
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
      RemoveCModel(cModels[n]);
   for(n = 0 ; n < totModels ; ++n){
     Free(PM[n]->freqs);
@@ -650,33 +650,33 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
   double      bits = 0, bps = 0;
 
   // EXTRA MODELS DERIVED FROM EDITS
-  totModels = P->nModels;
-  for(n = 0 ; n < P->nModels ; ++n)
-    if(P->model[n].edits != 0)
+  totModels = NP->nModels;
+  for(n = 0 ; n < NP->nModels ; ++n)
+    if(NP->model[n].edits != 0)
       totModels += 1;
 
   PM      = (PMODEL  **) Calloc(totModels, sizeof(PMODEL *));
   for(n = 0 ; n < totModels ; ++n)
-    PM[n] = CreatePModel      (P->nSym);
-  MX      = CreatePModel      (P->nSym);
-  PT      = CreateFloatPModel (P->nSym);
+    PM[n] = CreatePModel      (NP->nSym);
+  MX      = CreatePModel      (NP->nSym);
+  PT      = CreateFloatPModel (NP->nSym);
   WM      = CreateWeightModel (totModels);
 
   symbBUF = CreateCBuffer(DEF_BUF_SIZE, DEF_BUF_GUARD);
 
-  cModels = (CMODEL **) Malloc(P->nModels * sizeof(CMODEL *));
-  for(n = 0 ; n < P->nModels ; ++n)
-    cModels[n] = CreateCModel(P->model[n].ctx, P->model[n].den,
-    TARGET, P->model[n].edits, P->model[n].eDen, P->nSym, 
-    P->model[n].gamma, P->model[n].eGamma, P->model[n].ir, 
-    P->model[n].eIr, P->model[n].memory);
+  cModels = (CMODEL **) Malloc(NP->nModels * sizeof(CMODEL *));
+  for(n = 0 ; n < NP->nModels ; ++n)
+    cModels[n] = CreateCModel(NP->model[n].ctx, NP->model[n].den,
+    TARGET, NP->model[n].edits, NP->model[n].eDen, NP->nSym, 
+    NP->model[n].gamma, NP->model[n].eGamma, NP->model[n].ir, 
+    NP->model[n].eIr, NP->model[n].memory);
   
   // GIVE SPECIFIC GAMMA:
   int pIdx = 0;
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     {
     WM->gamma[pIdx++] = cModels[n]->gamma;
-    if(P->model[n].edits != 0)
+    if(NP->model[n].edits != 0)
       WM->gamma[pIdx++] = cModels[n]->eGamma;
     }
 
@@ -684,13 +684,13 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
   for(idxPos = 0 ; idxPos < length ; ++idxPos)
     {
     sym = SEQ[idxPos];
-    symbBUF->buf[symbBUF->idx] = sym = P->A->revMap[sym];
+    symbBUF->buf[symbBUF->idx] = sym = NP->A->revMap[sym];
       
-    memset((void *)PT->freqs, 0, P->nSym * sizeof(double));
+    memset((void *)PT->freqs, 0, NP->nSym * sizeof(double));
 
     n = 0;
     pos = &symbBUF->buf[symbBUF->idx-1];
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       GetPModelIdx(pos, CM);
@@ -708,12 +708,12 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
       ++n;
       }
 
-    ComputeMXProbs(PT, MX, P->nSym);
+    ComputeMXProbs(PT, MX, NP->nSym);
     bits += (bps = PModelNats(MX, sym) / M_LN2);
     CalcDecayment(WM, PM, sym);
 
     // ADD COUNTERS
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       switch(CM->ir)
@@ -737,7 +737,7 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
       }
 
     // UPDATE INDEXES & SYM CACHE
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -766,7 +766,7 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -794,7 +794,7 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -806,7 +806,7 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
 
     RenormalizeWeights(WM);
 
-    for(cModel = 0, n = 0 ; cModel < P->nModels ; ++cModel, ++n)
+    for(cModel = 0, n = 0 ; cModel < NP->nModels ; ++cModel, ++n)
       if(cModels[cModel]->edits != 0)
         UpdateTolerantModel(cModels[cModel]->TM, PM[++n], sym);
 
@@ -815,7 +815,7 @@ uint64_t CompressTargetReadAA_NCD(char *SEQ, uint64_t length)
     }
 
   Free(MX);
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     RemoveCModel(cModels[n]);
   for(n = 0 ; n < totModels ; ++n)
     RemovePModel(PM[n]);
@@ -842,34 +842,34 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
   double      bits = 0, bps = 0;
 
   // FORCE DNA
-  P->nSym = 4;
+  NP->nSym = 4;
 
   // EXTRA MODELS DERIVED FROM EDITS
-  totModels = P->nModels;
-  for(n = 0 ; n < P->nModels ; ++n)
-    if(P->model[n].edits != 0)
+  totModels = NP->nModels;
+  for(n = 0 ; n < NP->nModels ; ++n)
+    if(NP->model[n].edits != 0)
       totModels += 1;
 
   PM            = (PMODEL  **) Calloc(totModels, sizeof(PMODEL *));
   for(n = 0 ; n < totModels ; ++n)
-        PM[n]   = CreatePModel      (P->nSym);
-  MX            = CreatePModel      (P->nSym);
-  PT            = CreateFloatPModel (P->nSym);
+        PM[n]   = CreatePModel      (NP->nSym);
+  MX            = CreatePModel      (NP->nSym);
+  PT            = CreateFloatPModel (NP->nSym);
   WM            = CreateWeightModel (totModels);
 
   symbBUF  = CreateCBuffer(DEF_BUF_SIZE, DEF_BUF_GUARD);
 
   CMODEL **CM_clone;
-  CM_clone = (CMODEL **) Malloc(P->nModels * sizeof(CMODEL *));
-  for(n = 0 ; n < P->nModels ; ++n)
+  CM_clone = (CMODEL **) Malloc(NP->nModels * sizeof(CMODEL *));
+  for(n = 0 ; n < NP->nModels ; ++n)
     CM_clone[n] = CloneCModel(cModels[n]);
 
   // GIVE SPECIFIC GAMMA:
   int pIdx = 0;
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     {
     WM->gamma[pIdx++] = CM_clone[n]->gamma;
-    if(P->model[n].edits != 0)
+    if(NP->model[n].edits != 0)
       WM->gamma[pIdx++] = CM_clone[n]->eGamma;
     }
 
@@ -887,11 +887,11 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
       }
 
     symbBUF->buf[symbBUF->idx] = sym = DNASymToNum(sym);
-    memset((void *)PT->freqs, 0, P->nSym * sizeof(double));
+    memset((void *)PT->freqs, 0, NP->nSym * sizeof(double));
 
     n = 0;
     pos = &symbBUF->buf[symbBUF->idx-1];
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = CM_clone[cModel];
       GetPModelIdx(pos, CM);
@@ -915,7 +915,7 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
     CalcDecayment(WM, PM, sym);
 
     // ADD COUNTERS
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = CM_clone[cModel];
       switch(CM->ir)
@@ -939,7 +939,7 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
       }
 
     // UPDATE INDEXES & SYM CACHE
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = CM_clone[cModel];
       if(CM->memory != 0)
@@ -968,7 +968,7 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = CM_clone[cModel];
       if(CM->memory != 0)
@@ -996,7 +996,7 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = CM_clone[cModel];
       if(CM->memory != 0)
@@ -1008,7 +1008,7 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
 
     RenormalizeWeights(WM);
 
-    for(cModel = 0, n = 0 ; cModel < P->nModels ; ++cModel, ++n)
+    for(cModel = 0, n = 0 ; cModel < NP->nModels ; ++cModel, ++n)
       if(CM_clone[cModel]->edits != 0)
         UpdateTolerantModel(CM_clone[cModel]->TM, PM[++n], sym);
 
@@ -1018,7 +1018,7 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
 
   Free(MX);
 
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
      RemoveCModel(CM_clone[n]);
   Free(CM_clone);
 
@@ -1050,37 +1050,37 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
   double      bits = 0, bps = 0;
 
   // EXTRA MODELS DERIVED FROM EDITS
-  totModels = P->nModels;
-  for(n = 0 ; n < P->nModels ; ++n)
-    if(P->model[n].edits != 0)
+  totModels = NP->nModels;
+  for(n = 0 ; n < NP->nModels ; ++n)
+    if(NP->model[n].edits != 0)
       totModels += 1;
 
   PM      = (PMODEL  **) Calloc(totModels, sizeof(PMODEL *));
   for(n = 0 ; n < totModels ; ++n)
-    PM[n] = CreatePModel      (P->nSym);
-  MX      = CreatePModel      (P->nSym);
-  PT      = CreateFloatPModel (P->nSym);
+    PM[n] = CreatePModel      (NP->nSym);
+  MX      = CreatePModel      (NP->nSym);
+  PT      = CreateFloatPModel (NP->nSym);
   WM      = CreateWeightModel (totModels);
 
   symbBUF = CreateCBuffer(DEF_BUF_SIZE, DEF_BUF_GUARD);
 
 /*
   CMODEL      **cModels;
-  cModels = (CMODEL **) Malloc(P->nModels * sizeof(CMODEL *));
-  for(n = 0 ; n < P->nModels ; ++n)
-    cModels[n] = CreateCModel(P->model[n].ctx, P->model[n].den,
-    TARGET, P->model[n].edits, P->model[n].eDen, P->nSym,
-    P->model[n].gamma, P->model[n].eGamma, P->model[n].ir,
-    P->model[n].eIr, P->model[n].memory);
+  cModels = (CMODEL **) Malloc(NP->nModels * sizeof(CMODEL *));
+  for(n = 0 ; n < NP->nModels ; ++n)
+    cModels[n] = CreateCModel(NP->model[n].ctx, NP->model[n].den,
+    TARGET, NP->model[n].edits, NP->model[n].eDen, NP->nSym,
+    NP->model[n].gamma, NP->model[n].eGamma, NP->model[n].ir,
+    NP->model[n].eIr, NP->model[n].memory);
 */
 // TODO: CLONE THE cMODELS
 
   // GIVE SPECIFIC GAMMA:
   int pIdx = 0;
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     {
     WM->gamma[pIdx++] = cModels[n]->gamma;
-    if(P->model[n].edits != 0)
+    if(NP->model[n].edits != 0)
       WM->gamma[pIdx++] = cModels[n]->eGamma;
     }
 
@@ -1088,13 +1088,13 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
   for(idxPos = 0 ; idxPos < length ; ++idxPos)
     {
     sym = SEQ[idxPos];
-    symbBUF->buf[symbBUF->idx] = sym = P->A->revMap[sym];
+    symbBUF->buf[symbBUF->idx] = sym = NP->A->revMap[sym];
 
-    memset((void *)PT->freqs, 0, P->nSym * sizeof(double));
+    memset((void *)PT->freqs, 0, NP->nSym * sizeof(double));
 
     n = 0;
     pos = &symbBUF->buf[symbBUF->idx-1];
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       GetPModelIdx(pos, CM);
@@ -1112,12 +1112,12 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
       ++n;
       }
 
-    ComputeMXProbs(PT, MX, P->nSym);
+    ComputeMXProbs(PT, MX, NP->nSym);
     bits += (bps = PModelNats(MX, sym) / M_LN2);
     CalcDecayment(WM, PM, sym);
 
     // ADD COUNTERS
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       switch(CM->ir)
@@ -1141,7 +1141,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
       }
 
     // UPDATE INDEXES & SYM CACHE
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -1170,7 +1170,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -1198,7 +1198,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
         }
       }
 
-    for(cModel = 0 ; cModel < P->nModels ; ++cModel)
+    for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
       CMODEL *CM = cModels[cModel];
       if(CM->memory != 0)
@@ -1210,7 +1210,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
 
     RenormalizeWeights(WM);
 
-    for(cModel = 0, n = 0 ; cModel < P->nModels ; ++cModel, ++n)
+    for(cModel = 0, n = 0 ; cModel < NP->nModels ; ++cModel, ++n)
       if(cModels[cModel]->edits != 0)
         UpdateTolerantModel(cModels[cModel]->TM, PM[++n], sym);
 
@@ -1222,7 +1222,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
 
 // TODO: REMOVE THE CLONED MODELS
 /*
-  for(n = 0 ; n < P->nModels ; ++n)
+  for(n = 0 ; n < NP->nModels ; ++n)
     RemoveCModel(cModels[n]);
 */
 
@@ -1241,7 +1241,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
 void *CompressThread(void *Thr)
   {
   THREADS *T = (THREADS *) Thr;
-  if(P->dna == 0) CompressTargetDNA(T[0]);
+  if(NP->dna == 0) CompressTargetDNA(T[0]);
   else            CompressTargetAA (T[0]);
   pthread_exit(NULL);
   }
@@ -1268,61 +1268,61 @@ void CompressAction(THREADS *T)
 //
 void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
   {
-  P = *&MAP;
+  NP = *&MAP;
 
-  CheckFileIsFASTA(P->filename);
-  if(P->verbose) PrintMessage("Loading alphabet ...");
-  P->A = CreateAlphabet();
-  LoadAlphabet(P->A, P->filename);
-  P->nSym = P->A->cardinality;
-  if(P->verbose) PrintAlphabet(P->A);
-  if(P->dna == 0)
+  CheckFileIsFASTA(NP->filename);
+  if(NP->verbose) PrintMessage("Loading alphabet ...");
+  NP->A = CreateAlphabet();
+  LoadAlphabet(NP->A, NP->filename);
+  NP->nSym = NP->A->cardinality;
+  if(NP->verbose) PrintAlphabet(NP->A);
+  if(NP->dna == 0)
     {
-    P->nSym = 4;
-    if(P->verbose)
+    NP->nSym = 4;
+    if(NP->verbose)
       PrintMessage("Adapting alphabet to 4 symbols {ACGT} (flag --dna on)");
     }
 
-  FILE *F = Fopen(P->filename, "r");
+  FILE *F = Fopen(NP->filename, "r");
   uint8_t buffer[BUFFER_SIZE], sym = 0, header = 1;
   uint32_t k, idx;
   uint64_t nSymbols = 0, idx_reads = 0;
  
-  if(P->verbose) fprintf(stderr, "[>] Analyzing FASTA reads...\n");
-  FA = CreateFastaReads();
-  CountFastaReadsAndMax(FA, P->filename);
-  if(P->verbose)
+  if(NP->verbose) fprintf(stderr, "[>] Analyzing FASTA reads...\n");
+  NFA = CreateFastaReads();
+  CountFastaReadsAndMax(NFA, NP->filename);
+  if(NP->verbose)
     {
-    fprintf(stderr, "[>] Number of FASTA reads: %"PRIu64"\n", FA->nReads);
-    fprintf(stderr, "[>] Maximum read length: %u\n", FA->max_nsym);
+    fprintf(stderr, "[>] Number of FASTA reads: %"PRIu64"\n", NFA->nReads);
+    fprintf(stderr, "[>] Maximum read length: %u\n", NFA->max_nsym);
     }
 
-  uint64_t vr_conjoint [FA->nReads+1];
-  uint64_t vr_regular  [FA->nReads+1];
-  char *SEQ = (char *) Calloc(FA->max_nsym + 1, sizeof(char));
+  uint64_t vr_conjoint [NFA->nReads+1];
+  uint64_t vr_regular  [NFA->nReads+1];
+  char *SEQ = (char *) Calloc(NFA->max_nsym + 1, sizeof(char));
 
-  if(P->verbose) 
-    fprintf(stderr, "[>] Compressing %s reference ...\n", !P->dna ? 
+  if(NP->verbose) 
+    fprintf(stderr, "[>] Compressing %s reference ...\n", !NP->dna ? 
     "DNA" : "Aminoacids");
 
   uint32_t n;
-  cModels = (CMODEL **) Malloc(P->nModels * sizeof(CMODEL *));
-  for(n = 0 ; n < P->nModels ; ++n)
-    cModels[n] = CreateCModel(P->model[n].ctx, P->model[n].den,
-    TARGET, P->model[n].edits, P->model[n].eDen, P->nSym,
-    P->model[n].gamma, P->model[n].eGamma, P->model[n].ir,
-    P->model[n].eIr, P->model[n].memory);
+  cModels = (CMODEL **) Malloc(NP->nModels * sizeof(CMODEL *));
+  for(n = 0 ; n < NP->nModels ; ++n)
+    cModels[n] = CreateCModel(NP->model[n].ctx, NP->model[n].den,
+    TARGET, NP->model[n].edits, NP->model[n].eDen, NP->nSym,
+    NP->model[n].gamma, NP->model[n].eGamma, NP->model[n].ir,
+    NP->model[n].eIr, NP->model[n].memory);
 
   uint64_t ref_bits;
-  FILE *RF = Fopen(P->reference, "r");
-  if(!P->dna) ref_bits = CompressTargetReadAndLoadModels   (RF);
+  FILE *RF = Fopen(NP->reference, "r");
+  if(!NP->dna) ref_bits = CompressTargetReadAndLoadModels   (RF);
   else        ref_bits = CompressTargetReadAndLoadModelsAA (RF);
   fclose(RF);
     
-  if(P->verbose) fprintf(stderr, "[>] Reference: %"PRIu64" bits\n", ref_bits);
+  if(NP->verbose) fprintf(stderr, "[>] Reference: %"PRIu64" bits\n", ref_bits);
   
-  if(P->verbose) fprintf(stderr, "[>] Compressing %"PRIu64" %s reads ...\n", 
-		 FA->nReads, !P->dna ? "DNA" : "Aminoacids");
+  if(NP->verbose) fprintf(stderr, "[>] Compressing %"PRIu64" %s reads ...\n", 
+		 NFA->nReads, !NP->dna ? "DNA" : "Aminoacids");
   
   while((k = fread(buffer, 1, BUFFER_SIZE, F)))
     for(idx = 0 ; idx < k ; ++idx)
@@ -1333,7 +1333,7 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
         header = 1;
         if(idx_reads > 0)
           {
-          if(!P->dna)
+          if(!NP->dna)
 	    {
             vr_regular [idx_reads-1] = CompressTargetRead_NCD(SEQ, nSymbols);
             vr_conjoint[idx_reads-1] = CompressTargetRead_Con(SEQ, nSymbols);
@@ -1344,7 +1344,7 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
 	    vr_conjoint[idx_reads-1] = CompressTargetReadAA_Con(SEQ, nSymbols);
 	    }
         
-	  CalcProgress(FA->nReads, idx_reads);
+	  CalcProgress(NFA->nReads, idx_reads);
           }
         ++idx_reads;
         continue;
@@ -1356,7 +1356,7 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
       SEQ[nSymbols++] = sym;
       }
  
-  if(!P->dna)
+  if(!NP->dna)
     {
     vr_regular [idx_reads-1] = CompressTargetRead_NCD(SEQ, nSymbols);
     vr_conjoint[idx_reads-1] = CompressTargetRead_Con(SEQ, nSymbols);
@@ -1367,7 +1367,7 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
     vr_conjoint[idx_reads-1] = CompressTargetReadAA_Con(SEQ, nSymbols);
     }
 
-  for(idx_reads = 0 ; idx_reads < FA->nReads ; ++idx_reads)
+  for(idx_reads = 0 ; idx_reads < NFA->nReads ; ++idx_reads)
     fprintf(stdout, "%"PRIu64"\t%lf\n", idx_reads+1, 
     ((double) (ref_bits + vr_conjoint[idx_reads]) - 
     min(vr_regular[idx_reads], ref_bits)) / 
