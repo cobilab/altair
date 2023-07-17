@@ -509,9 +509,11 @@ void NormalizedCompression(NC_PARAMETERS *MAP)
         if(idx_reads > 0)
           {
           if(!CP->dna) vr[idx_reads-1] = CompressTargetRead   (SEQ, nSymbols);
-          else        vr[idx_reads-1] = CompressTargetReadAA (SEQ, nSymbols);
+          else         vr[idx_reads-1] = CompressTargetReadAA (SEQ, nSymbols);
           }
         ++idx_reads;
+	if(CP->verbose)
+	  fprintf(stderr, "[>] Running read %"PRIu64" ... \n", idx_reads);
         continue;
         }
       if(sym == '\n' && header == 1)
@@ -533,7 +535,7 @@ void NormalizedCompression(NC_PARAMETERS *MAP)
       }
  
   if(!CP->dna) vr[idx_reads-1] = CompressTargetRead   (SEQ, nSymbols);
-  else        vr[idx_reads-1] = CompressTargetReadAA (SEQ, nSymbols);
+  else         vr[idx_reads-1] = CompressTargetReadAA (SEQ, nSymbols);
  
   for(idx_reads = 0 ; idx_reads < CFA->nReads ; ++idx_reads)
     fprintf(stdout, "%"PRIu64"\t%lf\t%s\n", idx_reads+1, vr[idx_reads], 

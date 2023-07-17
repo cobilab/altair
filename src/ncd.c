@@ -1019,7 +1019,7 @@ uint64_t CompressTargetRead_Con(char *SEQ, uint64_t length)
   Free(MX);
 
   for(n = 0 ; n < NP->nModels ; ++n)
-     RemoveCModel(CM_clone[n]);
+    RemoveCModel(CM_clone[n]);
   Free(CM_clone);
 
   for(n = 0 ; n < totModels ; ++n){
@@ -1316,14 +1316,15 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
   uint64_t ref_bits;
   FILE *RF = Fopen(NP->reference, "r");
   if(!NP->dna) ref_bits = CompressTargetReadAndLoadModels   (RF);
-  else        ref_bits = CompressTargetReadAndLoadModelsAA (RF);
+  else         ref_bits = CompressTargetReadAndLoadModelsAA (RF);
   fclose(RF);
     
   if(NP->verbose) fprintf(stderr, "[>] Reference: %"PRIu64" bits\n", ref_bits);
   
   if(NP->verbose) fprintf(stderr, "[>] Compressing %"PRIu64" %s reads ...\n", 
 		 NFA->nReads, !NP->dna ? "DNA" : "Aminoacids");
-  
+ 
+  idx_reads = 0; 
   while((k = fread(buffer, 1, BUFFER_SIZE, F)))
     for(idx = 0 ; idx < k ; ++idx)
       {
@@ -1344,9 +1345,10 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
 	    vr_conjoint[idx_reads-1] = CompressTargetReadAA_Con(SEQ, nSymbols);
 	    }
         
-	  CalcProgress(NFA->nReads, idx_reads);
           }
         ++idx_reads;
+        if(NP->verbose) 
+	  fprintf(stderr, "[>] Running read %"PRIu64" ... \n", idx_reads);
         continue;
         }
       if(sym == '\n' && header == 1)
