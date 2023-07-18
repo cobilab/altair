@@ -1064,24 +1064,18 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
 
   symbBUF = CreateCBuffer(DEF_BUF_SIZE, DEF_BUF_GUARD);
 
-/*
-  CMODEL      **cModels;
-  cModels = (CMODEL **) Malloc(NP->nModels * sizeof(CMODEL *));
+  CMODEL **CM_clone;
+  CM_clone = (CMODEL **) Malloc(NP->nModels * sizeof(CMODEL *));
   for(n = 0 ; n < NP->nModels ; ++n)
-    cModels[n] = CreateCModel(NP->model[n].ctx, NP->model[n].den,
-    TARGET, NP->model[n].edits, NP->model[n].eDen, NP->nSym,
-    NP->model[n].gamma, NP->model[n].eGamma, NP->model[n].ir,
-    NP->model[n].eIr, NP->model[n].memory);
-*/
-// TODO: CLONE THE cMODELS
+    CM_clone[n] = CloneCModel(cModels[n]);
 
   // GIVE SPECIFIC GAMMA:
   int pIdx = 0;
   for(n = 0 ; n < NP->nModels ; ++n)
     {
-    WM->gamma[pIdx++] = cModels[n]->gamma;
+    WM->gamma[pIdx++] = CM_clone[n]->gamma;
     if(NP->model[n].edits != 0)
-      WM->gamma[pIdx++] = cModels[n]->eGamma;
+      WM->gamma[pIdx++] = CM_clone[n]->eGamma;
     }
 
   compressed = 0;
@@ -1096,7 +1090,8 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
     pos = &symbBUF->buf[symbBUF->idx-1];
     for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
-      CMODEL *CM = cModels[cModel];
+      //CMODEL *CM = cModels[cModel];
+      CMODEL *CM = CM_clone[cModel];
       GetPModelIdx(pos, CM);
       ComputePModel(CM, PM[n], CM->pModelIdx, CM->alphaDen);
       ComputeWeightedFreqs(WM->weight[n], PM[n], PT, CM->nSym);
@@ -1119,7 +1114,8 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
     // ADD COUNTERS
     for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
-      CMODEL *CM = cModels[cModel];
+      //CMODEL *CM = cModels[cModel];
+      CMODEL *CM = CM_clone[cModel];
       switch(CM->ir)
         {
         case 0:
@@ -1143,7 +1139,8 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
     // UPDATE INDEXES & SYM CACHE
     for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
-      CMODEL *CM = cModels[cModel];
+      //CMODEL *CM = cModels[cModel];
+      CMODEL *CM = CM_clone[cModel];
       if(CM->memory != 0)
         {
         uint32_t mem_pos = (CM->M.pos) % CM->M.size;
@@ -1172,7 +1169,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
 
     for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
-      CMODEL *CM = cModels[cModel];
+      CMODEL *CM = CM_clone[cModel];
       if(CM->memory != 0)
         {
         uint32_t mps = (CM->M.pos + 1) % CM->M.size;
@@ -1200,7 +1197,7 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
 
     for(cModel = 0 ; cModel < NP->nModels ; ++cModel)
       {
-      CMODEL *CM = cModels[cModel];
+      CMODEL *CM = CM_clone[cModel];
       if(CM->memory != 0)
         {
         if(CM->M.pos >= CM->M.size - 1) CM->M.pos = 0;
@@ -1211,8 +1208,8 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
     RenormalizeWeights(WM);
 
     for(cModel = 0, n = 0 ; cModel < NP->nModels ; ++cModel, ++n)
-      if(cModels[cModel]->edits != 0)
-        UpdateTolerantModel(cModels[cModel]->TM, PM[++n], sym);
+      if(CM_clone[cModel]->edits != 0)
+        UpdateTolerantModel(CM_clone[cModel]->TM, PM[++n], sym);
 
     UpdateCBuffer(symbBUF);
     ++compressed;
@@ -1220,11 +1217,9 @@ uint64_t CompressTargetReadAA_Con(char *SEQ, uint64_t length)
 
   Free(MX);
 
-// TODO: REMOVE THE CLONED MODELS
-/*
   for(n = 0 ; n < NP->nModels ; ++n)
-    RemoveCModel(cModels[n]);
-*/
+    RemoveCModel(CM_clone[n]);
+  Free(CM_clone);
 
   for(n = 0 ; n < totModels ; ++n)
     RemovePModel(PM[n]);
@@ -1324,6 +1319,9 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
   if(NP->verbose) fprintf(stderr, "[>] Compressing %"PRIu64" %s reads ...\n", 
 		 NFA->nReads, !NP->dna ? "DNA" : "Aminoacids");
  
+  char identifier_prefix[NFA->nReads+1][HEADERS_PREFIX_SIZE+1];
+  uint32_t idx_header = 0;
+
   idx_reads = 0; 
   while((k = fread(buffer, 1, BUFFER_SIZE, F)))
     for(idx = 0 ; idx < k ; ++idx)
@@ -1352,9 +1350,20 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
         continue;
         }
       if(sym == '\n' && header == 1)
-        { header = 0; nSymbols = 0; continue; }
+        { 
+	header = 0; 
+	nSymbols = 0; 
+	identifier_prefix[idx_reads-1][idx_header] = '\0';
+        idx_header = 0;
+	continue; 
+	}
       if(sym == '\n') continue;
-      if(header == 1) continue;
+      if(header == 1) 
+        {
+        if(idx_header < HEADERS_PREFIX_SIZE)
+          identifier_prefix[idx_reads-1][idx_header++] = sym;	
+	continue;
+	}
       SEQ[nSymbols++] = sym;
       }
  
@@ -1370,10 +1379,10 @@ void NormalizedCompressionDistance(NCD_PARAMETERS *MAP)
     }
 
   for(idx_reads = 0 ; idx_reads < NFA->nReads ; ++idx_reads)
-    fprintf(stdout, "%"PRIu64"\t%lf\n", idx_reads+1, 
+    fprintf(stdout, "%"PRIu64"\t%lf\t%s\n", idx_reads+1, 
     ((double) (ref_bits + vr_conjoint[idx_reads]) - 
     min(vr_regular[idx_reads], ref_bits)) / 
-    max(vr_regular[idx_reads], ref_bits));
+    max(vr_regular[idx_reads], ref_bits), identifier_prefix[idx_reads]);
 
   fclose(F);
   
