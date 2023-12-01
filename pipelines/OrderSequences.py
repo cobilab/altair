@@ -1,5 +1,6 @@
 import unittest
 from datetime import datetime
+import argparse 
 
 def parse_fasta_file(file_content):
     sections = file_content.split('>')[1:]
@@ -71,7 +72,17 @@ class TestFastaSorting(unittest.TestCase):
         process_fasta_file('FIL-SARS-CoV-2.fa', 'sorted_output.fa')
         self.assertTrue(is_file_sorted('sorted_output.fa'))
 
-# Run the tests
 if __name__ == '__main__':
-    process_fasta_file('FIL-SARS-CoV-2.fa', 'sorted_output.fa')
-    unittest.main()
+    # Create an argument parser
+    parser = argparse.ArgumentParser(description='Process a FASTA file.')
+    parser.add_argument('input_path', type=str, help='Path to the input FASTA file')
+    parser.add_argument('output_path', type=str, help='Path to the output FASTA file')
+    
+    # Parse the arguments
+    args = parser.parse_args()
+
+    # Process the FASTA file with the provided paths
+    process_fasta_file(args.input_path, args.output_path)
+    
+    # Run unit tests
+    unittest.main(argv=['first-arg-is-ignored'], exit=False)
