@@ -1,6 +1,6 @@
 <div align="center">
 
-![Conda](https://img.shields.io/conda/dn/bioconda/altair)
+![Conda](https://img.shields.io/conda/dn/bioconda/altair-mf)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
 [![Speed](https://img.shields.io/static/v1.svg?label=Testing&message=High-speed%20&color=green)](#)
 [![HF](https://img.shields.io/static/v1.svg?label=Testing&message=High-flexibility&color=blue)](#)
