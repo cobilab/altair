@@ -45,6 +45,19 @@ cmake .
 make
 </pre>
 
+### Additional Tools
+For certain scripts, the Gto toolkit is required, installable via Conda:
+```bash
+conda install -c cobilab gto --yes
+```
+Or manually:
+```bash
+git clone https://github.com/cobilab/gto.git
+cd gto/src/
+make
+export PATH="$HOME/gto/bin:$PATH"
+```
+
 ## PARAMETERS
 
 To see the possible options type
@@ -66,20 +79,68 @@ AltaiR ncd -h
 AltaiR raw -h
 </pre>
 
-## CITATION ##
+## Reproducing Experiments
+Assuming AltaiR is compiled under the `src/` folder, and you are in the `pipeline/` folder.
+```bash
+cp ../src/AltaiR .
+```
 
-On using this software/method please cite:
+### Filtering Sequences
+To filter sequences use the following command:
+```bash
+python3 Histogram.py
+bash Filter.sh 29885 29921
+```
 
-* pending
+### Similarity Profiles (NCD)
+To simulate and measure similarity profiles:
 
-## ISSUES ##
+```bash
+bash Simulation.sh
+bash Similarity.sh ORIGINAL.fa
+bash SimProfile.sh sim-data.csv 2 0 1.2
+mv NCDProfilesim-data.csv.pdf NCD_P1.pdf
+```
 
-For any issue let us know at [issues link](https://github.com/cobilab/altair/issues).
+### Phylogenetic Tree Construction
+Use the `tree.py` script to construct a phylogenetic tree from NCD values:
+```bash
+python3 tree.py sim-data.csv -N 50
+```
 
-## LICENSE ##
+### Complexity Profiles (NC)
+Run the following script to generate complexity profiles:
+```bash
+bash ComplexitySars.sh
+python3 CompProfileSars.py comp-data.csv sorted_output.fa 0.961 0.9617
+mv NCProfilecomp-data.csv.pdf NC.pdf
+```
 
-GPL v3.
+### Frequency Profiles
+Generate frequency profiles using the following commands:
+```bash
+bash FrequencySars.sh
+python3 combine_freq_and_date.py
+mv base_frequencies_plot.pdf Freq.pdf
+```
 
-For more information:
-<pre>http://www.gnu.org/licenses/gpl-3.0.html</pre>
+### Relative Singularity (RAWs) Profiles
+To calculate RAWs profiles:
+```bash
+bash RawSars.sh
+python3 RawSarsProfile.py sorted_output.fa
+mv relativeSingularityProfile.pdf RAWProfiles.pdf
+```
 
+## Citation
+
+If you use AltaiR in your research, please cite:
+- *pending*
+
+## Issues
+
+For any issues, please report at [AltaiR Issues](https://github.com/cobilab/altair/issues).
+
+## License
+
+AltaiR is licensed under GPL v3. For more information, visit [GPL v3 License](http://www.gnu.org/licenses/gpl-3.0.html).
