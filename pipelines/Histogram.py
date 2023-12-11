@@ -21,9 +21,8 @@ def plot_histogram(sequence_lengths, output_file, min_length=None, max_length=No
     plt.hist(sequence_lengths, bins=10000, color='blue', edgecolor='black')
 
     # Customizing the plot to resemble the gnuplot style
-    plt.title('Histogram of Sequence Lengths', color='black', fontsize=12)
-    plt.xlabel('Sequence Length', fontsize=12)
-    plt.ylabel('Frequency', fontsize=12)
+    plt.xlabel('Sequence Length', fontsize='xx-large')
+    plt.ylabel('Frequency', fontsize='xx-large')
 
     # Set grid and border styles
     plt.grid(True, which='major', linestyle='-', linewidth='0.5', color='grey')
@@ -37,8 +36,11 @@ def plot_histogram(sequence_lengths, output_file, min_length=None, max_length=No
     # Add an arrow annotation if needed
     plt.annotate('', xy=(29903, 0), xytext=(29903, max(sequence_lengths)/3),  
                  arrowprops=dict(facecolor='#CC0000', shrink=0.05, lw=2), fontsize=12)
+    # Set the tick size
+    plt.tick_params(axis='both', which='major', labelsize='x-large')
 
     # Save the plot as a PDF
+    plt.tight_layout()
     plt.savefig(output_file, format='pdf')
 
 # Replace 'SARS-CoV-2.fa' with the path to your FASTA file
