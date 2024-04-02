@@ -30,12 +30,17 @@ The AltaiR toolkit contains one main menu (command: <b>AltaiR</b>) with the six 
 ## INSTALLATION ##
 
 ### Conda
-Install [Miniconda](https://docs.conda.io/en/latest/miniconda.html), then run the following:
+First, install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) if you haven't already. Then, to create a new Conda environment named `altair` and install `altair-mf` using Conda Forge and Bioconda channels, run the following command:
+```bash
+mamba create -n altair -c conda-forge -c bioconda altair-mf
+```
+
+To simply install `altair-mf` in an existing environment:
 ```bash
 conda install -y -c bioconda altair-mf
 ```
 
-Otherwise, CMake is needed for installation (http://www.cmake.org/). You can download it directly from http://www.cmake.org/cmake/resources/software.html or use an appropriate packet manager. In the following instructions we show the procedure to install, compile and run AltaiR:
+Otherwise, CMake is needed for manual installation. You can download CMake directly from http://www.cmake.org/cmake/resources/software.html or use an appropriate package manager. Below are the instructions to install, compile, and run AltaiR:
 
 <pre>
 sudo apt-get install cmake git
