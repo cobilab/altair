@@ -10,11 +10,11 @@
 
 <p align="center"><img src="imgs/altair.png" alt="AltaiR" width="250" border="0" /></p>
 <p align="center">
-<b>AltaiR: a C toolkit for alignment-free and spatio-temporal analysis of multi-FASTA data</b>. 
+<b>AltaiR: a C toolkit for alignment-free and temporal analysis of multi-FASTA data</b>. 
 </p>
 
 <p align="justify">
-This method provides alignment-free and spatio-temporal analysis of multi-FASTA data through the implementation of a C toolkit highly flexible and with characteristics covering large-scale data, namely extensive collections of genomes/proteomes. This toolkit is ideal for scenarios entangling the presence of multiple sequences from epidemic and pandemic events. AlcoR is implemented in C language using multi-threading to increase the computational speed, is flexible for multiple applications, and does not contain external dependencies. The tool accepts any sequence(s) in (multi-) FASTA format.
+This method provides alignment-free and temporal analysis of multi-FASTA data through the implementation of a C toolkit highly flexible and with characteristics covering large-scale data, namely extensive collections of genomes/proteomes. This toolkit is ideal for scenarios entangling the presence of multiple sequences from epidemic and pandemic events. AlcoR is implemented in C language using multi-threading to increase the computational speed, is flexible for multiple applications, and does not contain external dependencies. The tool accepts any sequence(s) in (multi-) FASTA format.
 
 The AltaiR toolkit contains one main menu (command: <b>AltaiR</b>) with the six sub menus for computing the features that it provides, namely
 <ul>
