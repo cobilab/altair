@@ -140,7 +140,7 @@ mv relativeSingularityProfile.pdf RAWProfiles.pdf
 ## Citation
 
 If you use AltaiR in your research, please cite:
-- *pending*
+Silva, Jorge M., Armando J. Pinho, and Diogo Pratas. "AltaiR: a C toolkit for alignment-free and temporal analysis of multi-FASTA data." GigaScience 13 (2024): giae086.
 
 ## Issues
 
