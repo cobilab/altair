@@ -162,6 +162,8 @@ typedef struct
   char      *alphabet;
   double    cg_min;
   double    cg_max;
+  double    mt_min;
+  double    mt_max;
   char      **patterns;
   U32       nPatterns;
   char      **ignore;
