@@ -284,6 +284,8 @@ void P_FilterCharacteristics(char **p, int c)
   MAP->alphabet = ArgsString (DEF_FC_ALPHABET, p, c, "-a",   "--alphabet");
   MAP->cg_min   = ArgsDouble (0.0,             p, c, "-ncg", "--cg-minimum");
   MAP->cg_max   = ArgsDouble (1.0,             p, c, "-mcg", "--cg-maximum");
+  MAP->mt_min   = ArgsDouble (20.0,            p, c, "-nmt", "--mt-minimum");
+  MAP->mt_max   = ArgsDouble (90.0,            p, c, "-mmt", "--mt-maximum");
 
   uint32_t x, y;
 

@@ -18,11 +18,27 @@
 #include "strings.h"
 
 //////////////////////////////////////////////////////////////////////////////
+// - - - - C A L C U L A T E   M E L T I N G   T E M P E R A T U R E - - - - -
+//
+double CalcMeltTemp(uint32_t A, uint32_t C, uint32_t G, uint32_t T)
+  {
+  uint32_t len = A + T + G + C;
+
+  if(len == 0) return 0.0; // Avoid divide by zero
+
+  if(len < 14) 
+    return (A + T) * 2 + (G + C) * 4;
+  else 
+    return 64.9 + 41.0 * (G + C - 16.4) / len;
+  }
+
+//////////////////////////////////////////////////////////////////////////////
 // - - - - - - - - - W R I T E   R E A D   I F   V A L I D - - - - - - - - - -
 //
 int WriteReadIfValid(int nPatterns, int nIgnore, uint64_t min, uint64_t max, 
   uint64_t sl, int ri, char **patterns, char **ignore, EBUF *HB, EBUF *SB, 
-  int64_t cg_count, double cg_min, double cg_max)
+  int64_t cg_count, double cg_min, double cg_max, double mt, double mt_min,
+  double mt_max)
   {
   unsigned rwrite = 1, x;
 
@@ -38,7 +54,7 @@ int WriteReadIfValid(int nPatterns, int nIgnore, uint64_t min, uint64_t max,
  
   double cgv = (double) cg_count / sl; 
   if(sl > min && sl < max && cgv >= cg_min && cgv <= cg_max && ri == 0 
-  && rwrite == 0) 
+  && rwrite == 0 && mt >= mt_min && mt <= mt_max) 
     {
     for(x = 0 ; x < HB->idx ; ++x) fprintf(stdout, "%c", HB->buf[x]);
     for(x = 0 ; x < SB->idx ; ++x) fprintf(stdout, "%c", SB->buf[x]);
@@ -97,7 +113,9 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
 
   if(MAP->verbose) fprintf(stderr, "[>] Running filter ...\n");
 
-  int64_t k, idx_in, seq_len = 0, nReads = 0, cg_count = 0;
+  double mt = 0;
+  int64_t k, idx_in, seq_len = 0, nReads = 0, cg_count = 0, a_count = 0,
+	  c_count = 0, g_count = 0, t_count = 0;
   uint8_t *in_Buf, sym, header = 0, skip = 0, ignore_read = 0, rwrite;
 
   in_Buf = (uint8_t *) Calloc(BUFFER_SIZE + 1, sizeof(uint8_t));
@@ -105,7 +123,6 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
   EBUF *header_Buf = CreateEBuffer(5000, 200000);
   EBUF *sequence_Buf = CreateEBuffer(30000, 200000);
 
-  cg_count = 0;
   nReads = 0;
   header = 1;
   seq_len = 0;
@@ -126,6 +143,10 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
 	  seq_len = 0;
 	  ignore_read = 0;
 	  cg_count = 0;
+	  a_count = 0;
+	  c_count = 0;
+	  g_count = 0;
+	  t_count = 0;
 	  }
 
 	continue;
@@ -135,10 +156,13 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
 	if(sym == '>')
           {
 	  ++nReads;
+  
+	  mt = CalcMeltTemp(a_count, c_count, g_count, t_count);
 
           if(WriteReadIfValid(MAP->nPatterns, MAP->nIgnore, MAP->minimum, 
 	  MAP->maximum, seq_len, ignore_read, MAP->patterns, MAP->ignore, 
-	  header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max) == 1)
+	  header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max, 
+	  mt, MAP->mt_min, MAP->mt_max) == 1)
             ++valid; 
 
 	  ResetEBuffer(header_Buf);
@@ -153,8 +177,14 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
 
         if(symbols[sym] == 1) ++seq_len;
         if(symbols[sym] == 0 && MAP->complete == 1) ignore_read = 1;
-	if(sym == 'C' || sym == 'G')
-	  ++cg_count;
+        switch(toupper(sym))
+	  {
+	  case 'A': ++a_count; break;
+	  case 'C': ++c_count; ++cg_count; break;
+	  case 'G': ++g_count; ++cg_count; break;
+	  case 'T': ++t_count; break;
+	  default: break;
+	  }
 	}
       else 
 	{
@@ -163,10 +193,13 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
 	}
       }
 
+  mt = CalcMeltTemp(a_count, c_count, g_count, t_count);
+
   ++nReads;
   if(WriteReadIfValid(MAP->nPatterns, MAP->nIgnore, MAP->minimum,
   MAP->maximum, seq_len, ignore_read, MAP->patterns, MAP->ignore,
-  header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max) == 1)
+  header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max,
+  mt, MAP->mt_min, MAP->mt_max) == 1)
     ++valid;
   
   if(MAP->verbose)

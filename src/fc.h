@@ -12,7 +12,7 @@
 
 int  WriteReadIfValid      (int, int, uint64_t, uint64_t, uint64_t, int,
 	              	   char **, char **, EBUF *, EBUF *, int64_t,
-			   double, double);
+			   double, double, double, double, double);
 void FilterCharacteristics (FC_PARAMETERS *);
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
