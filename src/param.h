@@ -157,6 +157,7 @@ typedef struct
   U32       help;
   U32       verbose;
   U32       complete;
+  U32       special;
   U32       minimum;
   U32       maximum;
   char      *alphabet;

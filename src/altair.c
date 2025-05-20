@@ -277,6 +277,7 @@ void P_FilterCharacteristics(char **p, int c)
   MAP->help     = ArgsState  (DEF_FC_HELP,     p, c, "-h",   "--help");
   MAP->verbose  = ArgsState  (DEF_FC_VERBOSE,  p, c, "-v",   "--verbose");
   MAP->complete = ArgsState  (DEF_FC_COMPLETE, p, c, "-c",   "--complete");
+  MAP->special  = ArgsState  (DEF_FC_SPECIAL,  p, c, "-sp",  "--special");
   MAP->minimum  = ArgsNum    (DEF_FC_MINIMUM,  p, c, "-min", "--minimum",
                              1, UINT_MAX);
   MAP->maximum  = ArgsNum    (UINT_MAX,        p, c, "-max", "--maximum",

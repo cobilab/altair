@@ -62,6 +62,7 @@ typedef int8_t   I8;
 #define DEF_FC_MINIMUM         1
 #define DEF_FC_MAXIMUM         99999999
 #define DEF_FC_ALPHABET        "ACGT"
+#define DEF_FC_SPECIAL         0
 
 #define DEF_AF_HELP            0
 #define DEF_AF_FL              0

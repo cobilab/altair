@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <limits.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "defs.h"
 #include "af.h"
@@ -38,7 +39,7 @@ double CalcMeltTemp(uint32_t A, uint32_t C, uint32_t G, uint32_t T)
 int WriteReadIfValid(int nPatterns, int nIgnore, uint64_t min, uint64_t max, 
   uint64_t sl, int ri, char **patterns, char **ignore, EBUF *HB, EBUF *SB, 
   int64_t cg_count, double cg_min, double cg_max, double mt, double mt_min,
-  double mt_max)
+  double mt_max, int special)
   {
   unsigned rwrite = 1, x;
 
@@ -52,12 +53,33 @@ int WriteReadIfValid(int nPatterns, int nIgnore, uint64_t min, uint64_t max,
     if(strcasestr((char *) HB->buf, (char *) ignore[x]))
       rwrite = 1;
  
-  double cgv = (double) cg_count / sl; 
+  double cgv = (double) cg_count / sl;
+
   if(sl > min && sl < max && cgv >= cg_min && cgv <= cg_max && ri == 0 
   && rwrite == 0 && mt >= mt_min && mt <= mt_max) 
     {
-    for(x = 0 ; x < HB->idx ; ++x) fprintf(stdout, "%c", HB->buf[x]);
-    for(x = 0 ; x < SB->idx ; ++x) fprintf(stdout, "%c", SB->buf[x]);
+    if(special == 1)
+      {
+      assert(HB->idx > 1);
+      for(x = 1 ; x < HB->idx ; ++x) 
+	if(isprint(HB->buf[x]))
+          fprintf(stdout, "%c", HB->buf[x]);
+    
+      fflush(stdout); 
+      fprintf(stdout, "\t");
+     
+      assert(SB->idx > 1);
+      for(x = 0 ; x < SB->idx ; ++x) 
+	if(isprint(SB->buf[x]))
+          fprintf(stdout, "%c", SB->buf[x]);
+  
+      fprintf(stdout, "\t%.5lf\t%.5lf\n", cgv, mt);
+      }
+    else
+      {
+      for(x = 0 ; x < HB->idx ; ++x) fprintf(stdout, "%c", HB->buf[x]);
+      for(x = 0 ; x < SB->idx ; ++x) fprintf(stdout, "%c", SB->buf[x]);
+      }
    
     return 1;
     }
@@ -162,8 +184,10 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
           if(WriteReadIfValid(MAP->nPatterns, MAP->nIgnore, MAP->minimum, 
 	  MAP->maximum, seq_len, ignore_read, MAP->patterns, MAP->ignore, 
 	  header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max, 
-	  mt, MAP->mt_min, MAP->mt_max) == 1)
+	  mt, MAP->mt_min, MAP->mt_max, MAP->special) == 1)
+	    {
             ++valid; 
+            }
 
 	  ResetEBuffer(header_Buf);
 	  ResetEBuffer(sequence_Buf);
@@ -199,9 +223,11 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
   if(WriteReadIfValid(MAP->nPatterns, MAP->nIgnore, MAP->minimum,
   MAP->maximum, seq_len, ignore_read, MAP->patterns, MAP->ignore,
   header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max,
-  mt, MAP->mt_min, MAP->mt_max) == 1)
+  mt, MAP->mt_min, MAP->mt_max, MAP->special) == 1)
+    {
     ++valid;
-  
+    }
+
   if(MAP->verbose)
     {
     fprintf(stderr, "[>] Number of FASTA reads: %"PRIi64"\n", nReads);
