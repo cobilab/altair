@@ -91,6 +91,7 @@ int WriteReadIfValid(int nPatterns, int nIgnore, uint64_t min, uint64_t max,
 //
 void FilterCharacteristics(FC_PARAMETERS *MAP)
   {
+  srand(0);
   uint64_t x = 0, y = 0, valid = 0;
 
   CheckInputIsFASTA();
@@ -136,8 +137,8 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
   if(MAP->verbose) fprintf(stderr, "[>] Running filter ...\n");
 
   double mt = 0;
-  int64_t k, idx_in, seq_len = 0, nReads = 0, cg_count = 0, a_count = 0,
-	  c_count = 0, g_count = 0, t_count = 0;
+  int64_t k, idx_in, seq_len = 0, nReads = 0, a_count = 0, c_count = 0, 
+	  g_count = 0, t_count = 0, rd;
   uint8_t *in_Buf, sym, header = 0, skip = 0, ignore_read = 0, rwrite;
 
   in_Buf = (uint8_t *) Calloc(BUFFER_SIZE + 1, sizeof(uint8_t));
@@ -164,7 +165,6 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
 	  header = 0;
 	  seq_len = 0;
 	  ignore_read = 0;
-	  cg_count = 0;
 	  a_count = 0;
 	  c_count = 0;
 	  g_count = 0;
@@ -183,8 +183,8 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
 
           if(WriteReadIfValid(MAP->nPatterns, MAP->nIgnore, MAP->minimum, 
 	  MAP->maximum, seq_len, ignore_read, MAP->patterns, MAP->ignore, 
-	  header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max, 
-	  mt, MAP->mt_min, MAP->mt_max, MAP->special) == 1)
+	  header_Buf, sequence_Buf, c_count + g_count, MAP->cg_min, 
+	  MAP->cg_max, mt, MAP->mt_min, MAP->mt_max, MAP->special) == 1)
 	    {
             ++valid; 
             }
@@ -203,11 +203,96 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
         if(symbols[sym] == 0 && MAP->complete == 1) ignore_read = 1;
         switch(toupper(sym))
 	  {
-	  case 'A': ++a_count; break;
-	  case 'C': ++c_count; ++cg_count; break;
-	  case 'G': ++g_count; ++cg_count; break;
-	  case 'T': ++t_count; break;
-	  default: break;
+          case 'A': ++a_count; break;
+          case 'C': ++c_count; break;
+          case 'G': ++g_count; break;
+          case 'T':
+          case 'U': ++t_count; break;
+
+          // R -> A or G
+          case 'R': 
+          rd = rand() % 2;
+          if (rd == 0) ++a_count;
+          else ++g_count;
+          break;
+
+          // Y -> C or T
+          case 'Y':
+          rd = rand() % 2;
+          if (rd == 0) ++c_count;
+          else ++t_count;
+          break;
+
+          // S -> G or C
+          case 'S': 
+          rd = rand() % 2;
+          if (rd == 0) ++g_count;
+          else ++c_count;
+          break;
+
+          // W -> A or T
+          case 'W':
+          rd = rand() % 2;
+          if (rd == 0) ++a_count;
+          else ++t_count;
+          break;
+
+          // K -> G or T
+          case 'K': 
+          rd = rand() % 2;
+          if (rd == 0) ++g_count;
+          else ++t_count;
+          break;
+
+          // M -> A or C
+          case 'M':
+          rd = rand() % 2;
+          if (rd == 0) ++a_count;
+          else ++c_count;
+          break;
+
+          // B -> C, G, T
+          case 'B': 
+          rd = rand() % 3;
+          if (rd == 0) ++c_count;
+          else if (rd == 1) ++g_count;
+          else ++t_count;
+          break;
+
+          // D -> A, G, T
+          case 'D': 
+          rd = rand() % 3;
+          if (rd == 0) ++a_count;
+          else if (rd == 1) ++g_count;
+          else ++t_count;
+          break;
+
+          // H -> A, C, T
+          case 'H': 
+          rd = rand() % 3;
+          if (rd == 0) ++a_count;
+          else if (rd == 1) ++c_count;
+          else ++t_count;
+          break;
+
+          // V -> A, C, G
+          case 'V': 
+          rd = rand() % 3;
+          if (rd == 0) ++a_count;
+          else if (rd == 1) ++c_count;
+          else ++g_count;
+          break;
+
+          // N -> A, C, G, T
+          case 'N': 
+          rd = rand() % 4;
+          if (rd == 0) ++a_count;
+          else if (rd == 1) ++c_count;
+          else if (rd == 2) ++g_count;
+          else ++t_count;
+          break;
+
+	  default: break; // OTHER SYMBOLS: IGNORE
 	  }
 	}
       else 
@@ -222,8 +307,8 @@ void FilterCharacteristics(FC_PARAMETERS *MAP)
   ++nReads;
   if(WriteReadIfValid(MAP->nPatterns, MAP->nIgnore, MAP->minimum,
   MAP->maximum, seq_len, ignore_read, MAP->patterns, MAP->ignore,
-  header_Buf, sequence_Buf, cg_count, MAP->cg_min, MAP->cg_max,
-  mt, MAP->mt_min, MAP->mt_max, MAP->special) == 1)
+  header_Buf, sequence_Buf, c_count + g_count, MAP->cg_min, 
+  MAP->cg_max, mt, MAP->mt_min, MAP->mt_max, MAP->special) == 1)
     {
     ++valid;
     }
