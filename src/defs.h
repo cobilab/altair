@@ -94,7 +94,7 @@ typedef int8_t   I8;
 #define DEF_NC_VERBOSE         0
 #define DEF_NC_THREADS         4
 #define DEF_NC_ALPHABET        "ACGT"
-#define DEF_NC_DNA             1
+#define DEF_NC_DNA             0
 #define DEF_NC_MIN_LEVEL       1
 #define DEF_NC_MAX_LEVEL       15
 #define DEF_NC_LEVEL           11
