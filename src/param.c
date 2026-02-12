@@ -323,8 +323,8 @@ void PrintParametersNC(NC_PARAMETERS *M)
   uint32_t n;
 
   fprintf(stderr, "[>] Number of threads .............. %u\n", M->threads);
-  fprintf(stderr, "[>] DNA mode ....................... %s\n", M->dna == 0 ?
-  "no" : "yes");
+  fprintf(stderr, "[>] DNA mode ....................... %s\n", M->dna == 
+  DEF_NC_DNA ? "no" : "yes");
   for(n = 0 ; n < M->nModels ; ++n){
     fprintf(stderr, "[>] Target model %d:\n", n+1);
     fprintf(stderr, "  [+] Context order ................ %u\n",
