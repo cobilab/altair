@@ -495,8 +495,16 @@ void NormalizedCompression(NC_PARAMETERS *MAP)
 
   if(CP->verbose) fprintf(stderr, "[>] Compressing %s ...\n", !CP->dna ? 
 		 "DNA" : "Aminoacids");
- 
-  char identifier_prefix[CFA->nReads+1][HEADERS_PREFIX_SIZE+1];
+
+  //char identifier_prefix[CFA->nReads+1][HEADERS_PREFIX_SIZE+1];
+  // Move to heap given stack size limitations: 
+  size_t size_reads = (size_t)CFA->nReads + 1;
+  size_t header_prefix_size = (size_t)HEADERS_PREFIX_SIZE + 1;
+
+  // heap allocation, zero-filled like calloc
+  char (*identifier_prefix)[header_prefix_size] =
+  Calloc(size_reads, sizeof *identifier_prefix);
+
   uint32_t idx_header = 0;
 
   while((k = fread(buffer, 1, BUFFER_SIZE, F)))
@@ -542,7 +550,8 @@ void NormalizedCompression(NC_PARAMETERS *MAP)
     identifier_prefix[idx_reads]);
 
   fclose(F);
-  
+  free(identifier_prefix);
+	  
   return;
   }
 
