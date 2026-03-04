@@ -240,7 +240,8 @@ If you use AltaiR in your research, please cite:
 Silva, Jorge M., Armando J. Pinho, and Diogo Pratas.
 **“AltaiR: a C toolkit for alignment-free and temporal analysis of multi-FASTA data.”**
 *GigaScience* 13 (2024): giae086.
-doi:[10.1093/gigascience/giae086](https://doi.org/10.1093/gigascience/giae086)
+
+DOI: [10.1093/gigascience/giae086](https://doi.org/10.1093/gigascience/giae086)
 
 ---
 
