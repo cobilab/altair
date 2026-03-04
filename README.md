@@ -99,9 +99,9 @@ cmake --build build -j
 > make
 > ```
 
-### 🧩 Optional — Additional tools for pipeline scripts (Gto)
+### 🧩 Optional — Additional tools for pipeline scripts (GTO)
 
-Some scripts in `pipelines/` require the **Gto** toolkit.
+Some scripts in `pipelines/` require the **GTO** toolkit.
 
 Conda:
 
