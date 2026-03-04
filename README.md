@@ -9,53 +9,107 @@
 </div>
 
 <p align="center"><img src="imgs/altair.png" alt="AltaiR" width="250" border="0" /></p>
+
 <p align="center">
-<b>AltaiR: a C toolkit for alignment-free and temporal analysis of multi-FASTA data</b>. 
+<b>AltaiR</b><br/>
+Alignment-free and temporal analysis of multi-FASTA data (C toolkit)
 </p>
 
-<p align="justify">
-This method provides alignment-free and temporal analysis of multi-FASTA data through the implementation of a C toolkit highly flexible and with characteristics covering large-scale data, namely extensive collections of genomes/proteomes. This toolkit is ideal for scenarios entangling the presence of multiple sequences from epidemic and pandemic events. AlcoR is implemented in C language using multi-threading to increase the computational speed, is flexible for multiple applications, and does not contain external dependencies. The tool accepts any sequence(s) in (multi-) FASTA format.
+* * *
 
-The AltaiR toolkit contains one main menu (command: <b>AltaiR</b>) with the six sub menus for computing the features that it provides, namely
-<ul>
-<li><b>average</b>: moving average filter of a column float CSV file (the column to use is a parameter);</li>
-<li><b>filter</b>: filters FASTA reads by characteristics: alphabet, completeness, length, CG quantity, multiple string patterns and pattern absence; </li>
-<li><b>frequency</b>: computes the alphabet frequencies for each FASTA read (it enables alphabet filtering);</li>
-<li><b>nc</b>: computes the Normalized Compression (NC) for all FASTA reads according to a compression level;</li>
-<li><b>ncd</b>: computes the Normalized Compression Distance (NCD) for all FASTA reads according to a reference;</li>
-<li><b>raw</b>: computes Relative Absent Words (RAWs) with CG quantity estimation for all RAWs.</li>
-</ul>
-</p>
+## ✨ What is AltaiR?
 
-## INSTALLATION ##
+AltaiR is a fast, alignment-free toolkit for **temporal analysis and characterization of multi-FASTA datasets**, targeting large-scale collections such as **genomes** and **proteomes**.
 
-### Conda
-First, install [Miniconda](https://docs.conda.io/en/latest/miniconda.html) if you haven't already. Then, to create a new Conda environment named `altair` and install `altair-mf` using Conda Forge and Bioconda channels, run the following command:
+It is particularly useful for scenarios with many sequences collected over time (e.g., epidemic/pandemic datasets), where alignment-based workflows can be slow, brittle, or unnecessary for the desired analyses. AltaiR is implemented in **multi-threaded C**, is **highly flexible**, and is designed to run **without external dependencies** (core toolkit). It accepts any sequence(s) in **(multi-)FASTA** format.
+
+### ✅ Highlights
+
+- ⚡ High speed (multi-threaded C implementation)
+- 🧩 High flexibility (multiple independent analysis modules)
+- 🧬 Alignment-free methods (compression-based and k-mer/word-based analyses)
+- 📦 No external dependencies for the core toolkit
+- 🗂️ Works with any (multi-)FASTA input
+
+* * *
+
+## Contents
+
+- Commands
+- ⚙️ Installation
+- Quickstart
+- Help and parameters
+- Reproducing experiments (pipeline)
+- Citation
+- Issues
+- License
+
+* * *
+
+## Commands
+
+AltaiR provides a single entry point (`AltaiR`) with **six subcommands**:
+
+- `average` — moving average filter for a float column in a CSV file (column index is a parameter)
+- `filter` — filter FASTA records by alphabet, completeness, length, CG content, presence/absence of string patterns
+- `frequency` — compute alphabet frequencies per FASTA record (optionally with alphabet filtering)
+- `nc` — compute **Normalized Compression (NC)** per FASTA record (configurable compression level)
+- `ncd` — compute **Normalized Compression Distance (NCD)** for each record relative to a reference
+- `raw` — compute **Relative Absent Words (RAWs)** with CG% estimation per RAW
+
+* * *
+
+## ⚙️ Installation
+
+### Option A — Conda (recommended)
+
+Install Miniconda (or Mambaforge), then create an environment and install from Bioconda:
+
 ```bash
 mamba create -n altair -c conda-forge -c bioconda altair-mf
-```
+conda activate altair
+AltaiR -h
+````
 
-To simply install `altair-mf` in an existing environment:
+To install into an existing environment:
+
 ```bash
 conda install -y -c bioconda altair-mf
 ```
 
-Otherwise, CMake is needed for manual installation. You can download CMake directly from http://www.cmake.org/cmake/resources/software.html or use an appropriate package manager. Below are the instructions to install, compile, and run AltaiR:
+### Option B — Build from source (CMake)
 
-<pre>
-sudo apt-get install cmake git
+Requirements: `cmake`, `git`, and a C compiler toolchain.
+
+```bash
+sudo apt-get install -y cmake git build-essential
 git clone https://github.com/cobilab/altair.git
-cd altair/src/
-cmake .
-make
-</pre>
+cd altair
+cmake -S src -B build
+cmake --build build -j
+./build/AltaiR -h
+```
 
-### Additional Tools
-For certain scripts, the Gto toolkit is required, installable via Conda:
+> If you prefer the in-tree build used by some minimal setups:
+>
+> ```bash
+> cd altair/src
+> cmake .
+> make
+> ```
+
+### Optional — Additional tools for pipeline scripts (Gto)
+
+Some scripts in `pipeline/` require the **Gto** toolkit.
+
+Conda:
+
 ```bash
 conda install -c cobilab gto --yes
 ```
-Or manually:
+
+Manual:
+
 ```bash
 git clone https://github.com/cobilab/gto.git
 cd gto/src/
@@ -63,42 +117,70 @@ make
 export PATH="$HOME/gto/bin:$PATH"
 ```
 
-## PARAMETERS
+---
 
-To see the possible options type
-<pre>
-AltaiR
-</pre>
-or
-<pre>
+## Quickstart
+
+1. Show top-level help:
+
+```bash
 AltaiR -h
-</pre>
+```
 
-If you are not interested in viewing each sub-program option, type 
-<pre>
+2. Run a subcommand (see each module’s `-h` for required parameters):
+
+```bash
+AltaiR filter -h
+AltaiR frequency -h
+AltaiR nc -h
+AltaiR ncd -h
+AltaiR raw -h
+AltaiR average -h
+```
+
+---
+
+## Help and parameters
+
+Top-level help:
+
+```bash
+AltaiR
+# or
+AltaiR -h
+```
+
+Per-subcommand help:
+
+```bash
 AltaiR average -h
 AltaiR filter -h
 AltaiR frequency -h
 AltaiR nc -h
 AltaiR ncd -h
 AltaiR raw -h
-</pre>
+```
 
-## Reproducing Experiments
-Assuming AltaiR is compiled under the `src/` folder, and you are in the `pipeline/` folder.
+---
+
+## Reproducing experiments (pipeline)
+
+Assuming AltaiR was compiled and you are working under `pipeline/`:
+
 ```bash
 cp ../src/AltaiR .
 ```
 
-### Filtering Sequences
-To filter sequences use the following command:
+> Some steps require `python3`, `bash`, and (optionally) `gto` (see “Additional tools”).
+
+### Filtering sequences
+
 ```bash
 python3 Histogram.py
 bash Filter.sh 29885 29921
 ```
 
-### Similarity Profiles (NCD)
-To simulate and measure similarity profiles:
+### Similarity profiles (NCD)
 
 ```bash
 bash Simulation.sh
@@ -107,45 +189,58 @@ bash SimProfile.sh sim-data.csv 2 0 1.2
 mv NCDProfilesim-data.csv.pdf NCD_P1.pdf
 ```
 
-### Phylogenetic Tree Construction
-Use the `tree.py` script to construct a phylogenetic tree from NCD values:
+### Phylogenetic tree construction
+
 ```bash
 python3 tree.py sim-data.csv -N 50
 ```
 
-### Complexity Profiles (NC)
-Run the following script to generate complexity profiles:
+### Complexity profiles (NC)
+
 ```bash
 bash ComplexitySars.sh
 python3 CompProfileSars.py comp-data.csv sorted_output.fa 0.961 0.9617
 mv NCProfilecomp-data.csv.pdf NC.pdf
 ```
 
-### Frequency Profiles
-Generate frequency profiles using the following commands:
+### Frequency profiles
+
 ```bash
 bash FrequencySars.sh
 python3 combine_freq_and_date.py
 mv base_frequencies_plot.pdf Freq.pdf
 ```
 
-### Relative Singularity (RAWs) Profiles
-To calculate RAWs profiles:
+### Relative singularity (RAWs) profiles
+
 ```bash
 bash RawSars.sh
 python3 RawSarsProfile.py sorted_output.fa
 mv relativeSingularityProfile.pdf RAWProfiles.pdf
 ```
 
+---
+
 ## Citation
 
 If you use AltaiR in your research, please cite:
-Silva, Jorge M., Armando J. Pinho, and Diogo Pratas. "AltaiR: a C toolkit for alignment-free and temporal analysis of multi-FASTA data." GigaScience 13 (2024): giae086.
+
+Silva, Jorge M., Armando J. Pinho, and Diogo Pratas. **“AltaiR: a C toolkit for alignment-free and temporal analysis of multi-FASTA data.”**
+*GigaScience* 13 (2024): giae086.
+
+[https://doi.org/10.1093/gigascience/giae086](https://doi.org/10.1093/gigascience/giae086)
+
+---
 
 ## Issues
 
-For any issues, please report at [AltaiR Issues](https://github.com/cobilab/altair/issues).
+Please report bugs and feature requests in the repository issue tracker:
+
+* `https://github.com/cobilab/altair/issues`
+
+---
 
 ## License
 
-AltaiR is licensed under GPL v3. For more information, visit [GPL v3 License](http://www.gnu.org/licenses/gpl-3.0.html).
+AltaiR is licensed under **GNU GPL v3**. See [LICENSE](LICENSE).
+More information: `http://www.gnu.org/licenses/gpl-3.0.html`
