@@ -11,8 +11,7 @@
 <p align="center"><img src="imgs/altair.png" alt="AltaiR" width="250" border="0" /></p>
 
 <p align="center">
-<b>AltaiR</b><br/>
-Alignment-free and temporal analysis of multi-FASTA data (C toolkit)
+<b>AltaiR</b>: alignment-free and temporal analysis of multi-FASTA data (C toolkit)
 </p>
 
 * * *
